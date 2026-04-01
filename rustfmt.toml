@@ -1,0 +1,6 @@
+tab_spaces = 2
+hard_tabs = false
+reorder_imports = true
+reorder_modules = true
+group_imports = "StdExternalCrate"  # groups: std → external crates → crate::
+imports_granularity = "Crate"

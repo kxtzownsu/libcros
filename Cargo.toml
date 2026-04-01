@@ -1,0 +1,16 @@
+[package]
+name = "libcros"
+version = "0.2.0"
+edition = "2024"
+description = "A Rust library that provides easy-to-use functions for interacting with a Chrome device"
+license = "GPL-3.0-only"
+repository = "https://github.com/kxtzownsu/libcros"
+keywords = ["rust", "chromeos", "google", "chromium", "chromiumos", "chrome", "tpm", "gsc"]
+categories = [""]
+authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
+
+[dependencies]
+once_cell = "1.21.4"
+
+[[example]]
+name = "logger"
