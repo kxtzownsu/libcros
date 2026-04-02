@@ -28,17 +28,36 @@ jobs:
 
     - name: start tpm simulator
       run: |
+        TPM_LOG="$RUNNER_TEMP/tpm-${{ matrix.tpm_version }}.log"
         if [[ "${{ matrix.tpm_version }}" == "tpm1_2" ]]; then
-          tmux new-session -d 'bash scripts/start_tpm1.sh'
+          tmux new-session -d -s tpm-sim "bash \"$GITHUB_WORKSPACE/scripts/start_tpm1.sh\" > \"$TPM_LOG\" 2>&1"
         else
-          tmux new-session -d 'bash scripts/start_tpm2.sh'
+          tmux new-session -d -s tpm-sim "bash \"$GITHUB_WORKSPACE/scripts/start_tpm2.sh\" > \"$TPM_LOG\" 2>&1"
         fi
 
-        sleep 1
+        for _ in $(seq 1 30); do
+          if compgen -G '/dev/tpm*' > /dev/null; then
+            break
+          fi
+          sleep 1
+        done
+
+        if ! compgen -G '/dev/tpm*' > /dev/null; then
+          echo "no tpm dev found after waiting"
+          echo "--| START TPM LOG |--"
+          cat "$TPM_LOG"
+          echo "--| END   TPM LOG |--"
+          exit 1
+        fi
 
     - name: run example
       run: |
-        TPM_DEV=$(ls /dev/tpm* | sort -V | tail -n 1)
+        TPM_DEV=$(ls /dev/tpm* 2>/dev/null | sort -V | tail -n 1)
+        if [[ -z "$TPM_DEV" ]]; then
+          echo "no tpm found in /dev."
+          tmux capture-pane -pt tpm-sim || true
+          exit 1
+        fi
         
         echo "tpm dev: $TPM_DEV"
                 
