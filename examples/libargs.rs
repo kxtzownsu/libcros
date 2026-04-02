@@ -8,5 +8,5 @@ fn main() {
   args.check_help();
 
   println!("Verbose logging enabled: {}", verbose);
-  println!("Foobar flag value: {}",  foobar);
+  println!("Foobar flag value: {}", foobar);
 }

@@ -14,7 +14,7 @@ fn main() {
     "-t",
     "Specify a custom TPM device to use in /dev/tpmX format",
   );
-  
+
   args.check_help();
 
   if flags_tpm_path.is_empty() {
