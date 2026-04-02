@@ -1,7 +1,7 @@
 #[cfg(feature = "tpm1_2")]
-use libcros::tlcl::{TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable};
+use libcros::{LOG_FATAL, tlcl::{TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable}};
 use libcros::{
-  LOG, Logger, kv_get, kv_set,
+  LOG, LOG_FATAL_NOEXIT, Logger, kv_get, kv_set,
   libargs::ArgCheck,
   tlcl::{
     TlclDefineSpace, TlclUndefineSpace,
@@ -69,25 +69,28 @@ fn main() {
   #[cfg(feature = "tpm1_2")]
   {
     let rc = TlclPhysicalPresenceCMDEnable();
-    LOG!("PhysicalPresenceCMDEnable rc: {:X}", rc);
+    if rc != 0 {
+      LOG_FATAL!(rc.try_into().unwrap(); "TlclPhysicalPresenceCMDEnable failed with error code: {:x}", rc);
+    }
 
     let rc = TlclAssertPhysicalPresence();
-    LOG!("AssertPhysicalPresence rc: {:X}", rc);
+    if rc != 0 {
+      LOG_FATAL!(rc.try_into().unwrap(); "TlclAssertPhysicalPresence failed with error code: {:x}", rc);
+    }
   }
 
   for auth in AUTH_TYPES {
     LOG!("--| {} (perm=0x{:X}) |--", auth.name, auth.perm);
 
     let rc = TlclDefineSpace(NV_INDEX, auth.perm, NV_SIZE);
-    LOG!("DefineSpace rc: {:X}", rc);
-
     if rc != 0 {
-      LOG!("skipping undefine");
-      continue;
+      LOG_FATAL_NOEXIT!(rc.try_into().unwrap(); "TlclDefineSpace failed with error code: {:x}", rc);
     }
 
     let rc = TlclUndefineSpace(NV_INDEX);
-    LOG!("UndefineSpace rc: {:X}", rc);
+    if rc != 0 {
+      LOG_FATAL_NOEXIT!(rc.try_into().unwrap(); "TlclUndefineSpace failed with error code: {:x}", rc);
+    }
   }
 
   LOG!("done");

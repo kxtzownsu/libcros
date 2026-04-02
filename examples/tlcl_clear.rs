@@ -1,5 +1,5 @@
 use libcros::{
-  LOG, Logger, kv_get, kv_set,
+  LOG, LOG_FATAL, Logger, kv_get, kv_set,
   libargs::ArgCheck,
   tlcl::{
     TlclAssertPhysicalPresence, TlclForceClear, TlclPhysicalPresenceCMDEnable, TlclSetEnable,
@@ -28,14 +28,24 @@ fn main() {
   LOG!("clearing {}", &tpm);
 
   let rc = TlclPhysicalPresenceCMDEnable();
-  LOG!("PhysicalPresenceCMDEnable rc: {:X}", rc);
+  if rc != 0 {
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclPhysicalPresenceCMDEnable failed with error code: {:x}", rc);
+  }
 
   let rc = TlclAssertPhysicalPresence();
-  LOG!("AssertPhysicalPresence rc: {:X}", rc);
+  if rc != 0 {
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclAssertPhysicalPresence failed with error code: {:x}", rc);
+  }
 
+  /* on tpm2.0, this is the only one needed, everything else
+     is for tpm 1.2 */
   let rc = TlclForceClear();
-  LOG!("ForceClear rc: {:X}", rc);
+  if rc != 0 {
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclForceClear failed with error code: {:x}", rc);
+  }
 
   let rc = TlclSetEnable();
-  LOG!("SetEnable rc: {:X}", rc);
+  if rc != 0 {
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclSetEnable failed with error code: {:x}", rc);
+  }
 }
