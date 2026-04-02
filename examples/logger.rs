@@ -1,6 +1,11 @@
-use libcros::{LOG, LOG_DBG, LOG_FATAL, LOG_FATAL_NOEXIT, Logger};
+use libcros::{LOG, LOG_DBG, LOG_FATAL, LOG_FATAL_NOEXIT, Logger, libargs::ArgCheck};
 
 fn main() {
+  let mut args: ArgCheck = ArgCheck::new();
+  let verbose: bool = args.fbool("--verbose", "", "Enable debug messages");
+  let use_colors: bool = args.fbool("--colors", "-c", "Use colors when logging");
+  args.check_help();
+
   /*  arg1 to init is a boolean on whether or
       not we should be enabling verbose logging.
       verbose logging is done with LOG_DBG!(msg).
@@ -9,7 +14,7 @@ fn main() {
       should be using colors when logging. by default,
       we don't use colors but this can optionally be enabled.
   */
-  Logger::init(true, true);
+  Logger::init(verbose, use_colors);
 
   LOG!("This is an regular log");
   LOG_DBG!("This is a verbose log");

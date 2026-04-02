@@ -1,9 +1,9 @@
+#[cfg(feature = "tpm1_2")]
+use libcros::tlcl::permissions::{NV_PERM_PPREAD, NV_PERM_PPWRITE};
 use libcros::{
   LOG, LOG_FATAL, Logger, kv_set,
-  tlcl::{
-    TlclDefineSpace, TlclRead, TlclUndefineSpace, TlclWrite,
-    permissions::{NV_PERM_PPREAD, NV_PERM_PPWRITE},
-  },
+  libargs::ArgCheck,
+  tlcl::{TlclDefineSpace, TlclRead, TlclUndefineSpace, TlclWrite},
 };
 
 const NV_INDEX: u32 = 0x1008;
@@ -14,8 +14,23 @@ const KERN_VER: &[u8] = &[
 ];
 
 fn main() {
-  Logger::init(false, true);
-  kv_set(libcros::keys::TPM_PATH, "/dev/tpm1");
+  let mut args: ArgCheck = ArgCheck::new();
+  let verbose: bool = args.fbool("--verbose", "", "Enable debug messages");
+  let flags_tpm_path = args.fequals_str(
+    "--tpm-path",
+    "-t",
+    "Specify a custom TPM device to use in /dev/tpmX format",
+  );
+
+  args.check_help();
+
+  if flags_tpm_path.is_empty() {
+    kv_set(libcros::keys::TPM_PATH, "/dev/tpm69");
+  } else {
+    kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
+  }
+
+  Logger::init(verbose, true);
 
   /* platform hierarchy on TPM 1.2 requires physical presence */
   #[cfg(feature = "tpm1_2")]

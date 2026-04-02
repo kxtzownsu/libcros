@@ -1,7 +1,8 @@
 #[cfg(feature = "tpm1_2")]
 use libcros::tlcl::{TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable};
 use libcros::{
-  LOG, Logger, kv_set,
+  LOG, Logger, kv_get, kv_set,
+  libargs::ArgCheck,
   tlcl::{
     TlclDefineSpace, TlclUndefineSpace,
     permissions::{
@@ -43,9 +44,25 @@ const AUTH_TYPES: &[AuthType] = &[
 ];
 
 fn main() {
-  Logger::init(true, true);
-  let tpm = "/dev/tpm1";
-  kv_set(libcros::keys::TPM_PATH, tpm);
+  let mut args: ArgCheck = ArgCheck::new();
+  let verbose: bool = args.fbool("--verbose", "", "Enable debug messages");
+  let flags_tpm_path = args.fequals_str(
+    "--tpm-path",
+    "-t",
+    "Specify a custom TPM device to use in /dev/tpmX format",
+  );
+
+  args.check_help();
+  
+  if flags_tpm_path.is_empty() {
+    kv_set(libcros::keys::TPM_PATH, "/dev/tpm69");
+  } else {
+    kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
+  }
+
+  Logger::init(verbose, true);
+  let tpm = kv_get(libcros::keys::TPM_PATH);
+
   LOG!("using {}", tpm);
 
   /* TPM 1.2 requires physical presence for DefineSpace with PPWRITE/PPREAD */
