@@ -10,8 +10,7 @@ if [ ! -f "$TPM1_STATE_DIR/tpm-00.permall" ]; then
   sudo swtpm_setup \
     --tpmstate "$TPM1_STATE_DIR" \
     --createek \
-    --create-platform-cert \
-    --lock-nvram
+    --create-platform-cert
   if [ $? -ne 0 ]; then
     echo "swtpm_setup failed. Aborting." >&2
     exit 1
