@@ -43,6 +43,17 @@ macro_rules! LOG_DBG {
 
 #[macro_export]
 macro_rules! LOG_FATAL {
+  // LOG_FATAL!(67; "error"), would exit with rc 67
+  ($rc:expr; $($arg:tt)*) => {{
+    println!(
+      "FATAL [{}:{}]: {}",
+      file!(),
+      line!(),
+      format_args!($($arg)*)
+    );
+    std::process::exit($rc);
+  }};
+  // LOG_FATAL!("error"), would exit with rc -1
   ($($arg:tt)*) => {{
     println!(
       "FATAL [{}:{}]: {}",
@@ -56,6 +67,16 @@ macro_rules! LOG_FATAL {
 
 #[macro_export]
 macro_rules! LOG_FATAL_NOEXIT {
+  // LOG_FATAL_NOEXIT!(42; "error"), sicne we dont exit, the rc is ignored.
+  ($_rc:expr; $($arg:tt)*) => {
+    println!(
+      "FATAL [{}:{}]: {}",
+      file!(),
+      line!(),
+      format_args!($($arg)*)
+    );
+  };
+  // LOG_FATAL_NOEXIT!("error"), same thign, rc is ignored.
   ($($arg:tt)*) => {
     println!(
       "FATAL [{}:{}]: {}",
