@@ -26,6 +26,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y swtpm tmux
 
+    - name: prepare vTPM proxy
+      run: |
+        if [[ ! -e /dev/vtpmx ]]; then
+          sudo modprobe tpm_vtpm_proxy || true
+        fi
+
+        if [[ ! -e /dev/vtpmx ]]; then
+          echo "/dev/vtpmx is unavailable on this runner"
+          echo "swtpm --vtpm-proxy needs tpm_vtpm_proxy"
+          exit 1
+        fi
+
     - name: start tpm simulator
       run: |
         TPM_LOG="$RUNNER_TEMP/tpm-${{ matrix.tpm_version }}.log"
