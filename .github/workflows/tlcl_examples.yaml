@@ -1,0 +1,49 @@
+name: tlcl_examples
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example: [tlcl_clear, tlcl_define_and_undefine, tlcl_kernver, tlcl_read, tlcl_read_with_offset, tlcl_write]
+        tpm_version: [tpm1_2, tpm2_0]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y swtpm tmux
+
+    - name: start tpm simulator
+      run: |
+        if [[ "${{ matrix.tpm_version }}" == "tpm1_2" ]]; then
+          tmux new-session -d 'bash scripts/start_tpm1.sh'
+        else
+          tmux new-session -d 'bash scripts/start_tpm2.sh'
+        fi
+
+        sleep 1
+
+    - name: run example
+      run: |
+        TPM_DEV=$(ls /dev/tpm* | sort -V | tail -n 1)
+        
+        echo "tpm dev: $TPM_DEV"
+                
+        TPM_PATH="$TPM_DEV" cargo build --example ${{ matrix.example }} \
+          --features tlcl \
+          --features ${{ matrix.tpm_version }}
+
+        ./target/debug/examples/${{ matrix.example }} --tpm-path "$TPM_DEV" --verbose

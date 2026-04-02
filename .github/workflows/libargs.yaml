@@ -1,0 +1,32 @@
+name: libargs
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: run example
+      run: | 
+          cargo build --example ${{ github.workflow }}
+          ./target/debug/examples/${{ github.workflow }}
+          ./target/debug/examples/${{ github.workflow }} --foobar=1234
+          ./target/debug/examples/${{ github.workflow }} --foobar 1234
+          ./target/debug/examples/${{ github.workflow }} --foobar=1234 --verbose
+          ./target/debug/examples/${{ github.workflow }} --foobar 1234 --verbose
+          ./target/debug/examples/${{ github.workflow }} --verbose
+          ./target/debug/examples/${{ github.workflow }} --help
+          ./target/debug/examples/${{ github.workflow }} --foobar=1234 --help
+          ./target/debug/examples/${{ github.workflow }} --foobar 1234 --help
+          ./target/debug/examples/${{ github.workflow }} --foobar=1234 --verbose --help
+          ./target/debug/examples/${{ github.workflow }} --foobar 1234 --verbose --help
