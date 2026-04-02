@@ -16,12 +16,6 @@ pub fn kv_get_bool(key: &'static str) -> bool {
   matches!(kv_get(key).as_str(), "1" | "true")
 }
 
-/*
-  define keys here as needed.
-  maybe in the future we could make a function to
-  dynamically define keys at run-time instead of
-  hardcoding them here.
-*/
 pub mod keys {
   pub const TPM_PATH: &str = "tpm_path";
   pub const INTERNAL_DISK: &str = "internal_disk";
@@ -30,4 +24,7 @@ pub mod keys {
 pub mod logging;
 pub use logging::Logger;
 
+pub mod structs;
+
+#[cfg(feature = "tlcl")]
 pub mod tlcl;

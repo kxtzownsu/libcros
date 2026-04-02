@@ -4,7 +4,7 @@ pub struct Logger;
 
 // use_colors isn't implemented at the moment, ignore it.
 impl Logger {
-  pub fn init(verbose: bool, use_colors: bool) {
+  pub fn init(verbose: bool, _use_colors: bool) {
     unsafe {
       VERBOSE = verbose;
     }

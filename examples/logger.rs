@@ -1,13 +1,14 @@
 use libcros::{LOG, LOG_DBG, LOG_FATAL, LOG_FATAL_NOEXIT, Logger};
 
 fn main() {
-  // arg1 to init is a boolean on whether or
-  // not we should be enabling verbose logging.
-  // verbose logging is done with LOG_DBG!(msg).
+  /*  arg1 to init is a boolean on whether or
+      not we should be enabling verbose logging.
+      verbose logging is done with LOG_DBG!(msg).
 
-  // arg2 is a boolean on whether or not not we
-  // should be using colors when logging. by default,
-  // we don't use colors but this can optionally be enabled.
+      arg2 is a boolean on whether or not not we
+      should be using colors when logging. by default,
+      we don't use colors but this can optionally be enabled.
+  */
   Logger::init(true, true);
 
   LOG!("This is an regular log");
