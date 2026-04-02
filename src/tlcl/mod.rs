@@ -1,7 +1,6 @@
 use std::{
   fs::OpenOptions,
   io::{self, Read, Write},
-  os::unix::io::AsRawFd,
   thread,
   time::Duration,
 };
