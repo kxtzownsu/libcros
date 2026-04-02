@@ -26,4 +26,5 @@ sudo swtpm chardev \
   --vtpm-proxy \
   --tpmstate dir="$TPM1_STATE_DIR" \
   --log level=20 \
+  --locality allow-set-locality \
   --ctrl type=tcp,port="${PORT}"
