@@ -55,13 +55,13 @@ jobs:
         fi
 
         for _ in $(seq 1 30); do
-          if compgen -G '/dev/tpm*' > /dev/null; then
+          if compgen -G '/dev/tpm[0-9]*' > /dev/null; then
             break
           fi
           sleep 1
         done
 
-        if ! compgen -G '/dev/tpm*' > /dev/null; then
+        if ! compgen -G '/dev/tpm[0-9]*' > /dev/null; then
           echo "no tpm dev found after waiting"
           echo "--| START TPM LOG |--"
           cat "$TPM_LOG"
@@ -72,7 +72,7 @@ jobs:
     - name: run example
       if: steps.vtpm.outputs.available == 'true'
       run: |
-        TPM_DEV=$(ls /dev/tpm* 2>/dev/null | sort -V | tail -n 1)
+        TPM_DEV=$(ls /dev/tpm[0-9]* 2>/dev/null | sort -V | tail -n 1)
         if [[ -z "$TPM_DEV" ]]; then
           echo "no tpm found in /dev."
           tmux capture-pane -pt tpm-sim || true
