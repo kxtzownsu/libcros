@@ -1,4 +1,4 @@
-#![allow(unused_assignments)] /* remove when vb2ex_tpm_send_recv is implemented */
+#![allow(unused_assignments)]
 #![allow(unused_mut)]
 
 pub mod constants;

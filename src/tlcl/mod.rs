@@ -18,8 +18,6 @@ pub fn tpm_xmit(
   recvbuf: *mut u8,
   recv_len: *mut usize,
 ) -> u32 {
-  LOG!("tpm_xmit");
-
   let tpm_path = kv_get(keys::TPM_PATH);
   let send_data = unsafe { core::slice::from_raw_parts(sendbuf, send_size) };
 
@@ -60,14 +58,7 @@ pub fn tpm_xmit(
       *recv_len = received;
     }
   }
-
-  unsafe {
-    LOG!("send ({}): {:02x?}", send_size, send_data);
-    if !recvbuf.is_null() && !recv_len.is_null() {
-      let recv_data = core::slice::from_raw_parts(recvbuf as *const u8, *recv_len);
-      LOG!("recv ({}): {:02x?}", *recv_len, recv_data);
-    }
-  }
+  
   return constants::TPM_SUCCESS;
 }
 
