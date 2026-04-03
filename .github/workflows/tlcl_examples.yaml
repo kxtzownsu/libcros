@@ -85,7 +85,7 @@ jobs:
           --features tlcl \
           --features ${{ matrix.tpm_version }}
 
-        ./target/debug/examples/${{ matrix.example }} --tpm-path "$TPM_DEV" --verbose
+        sudo ./target/debug/examples/${{ matrix.example }} --tpm-path "$TPM_DEV" --verbose
 
     - name: explain skip
       if: steps.vtpm.outputs.available != 'true'
