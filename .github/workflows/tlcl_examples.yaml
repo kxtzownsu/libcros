@@ -29,6 +29,7 @@ jobs:
     - name: prepare vTPM proxy
       id: vtpm
       run: |
+        sudo bash scripts/build_vtpm.sh
         if [[ ! -e /dev/vtpmx ]]; then
           sudo modprobe tpm_vtpm_proxy || true
         fi
