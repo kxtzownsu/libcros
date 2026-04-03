@@ -6,4 +6,4 @@ pub use clear::TlclForceClear;
 pub use physical_presence::{
   TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable, TlclSetEnable,
 };
-pub use read::TlclRead;
+pub use read::{TlclRead, TlclReadWithOffset};

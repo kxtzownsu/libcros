@@ -3,36 +3,20 @@
 use crate::tlcl::{
   constants::{TPM_E_READ_EMPTY, TPM_E_RESPONSE_TOO_LARGE, TPM_SUCCESS},
   tpm12::{
-    constants::{TPM_ORD_NV_ReadValue, tpm1_nv_read_cmd, tpm1_response},
+    constants::{tpm1_nv_read_cmd, tpm1_response, TPM_ORD_NV_ReadValue},
     tpm_send_receive,
   },
 };
 
 pub fn TlclRead(index: u32, outbuf: *mut core::ffi::c_void, length: u32) -> u32 {
-  TlclReadWithOffsetRaw(index, outbuf, length, 0)
+  TlclReadWithOffset(index, length, 0, outbuf)
 }
 
-pub fn TlclReadWithOffset(index: u32, length: u16, offset: u16) -> Vec<u8> {
-  let mut outbuf = vec![0u8; length as usize];
-  let rv = TlclReadWithOffsetRaw(
-    index,
-    outbuf.as_mut_ptr() as *mut core::ffi::c_void,
-    length as u32,
-    offset as u32,
-  );
-
-  if rv != TPM_SUCCESS {
-    return Vec::new();
-  }
-
-  outbuf
-}
-
-fn TlclReadWithOffsetRaw(
+pub fn TlclReadWithOffset(
   index: u32,
-  outbuf: *mut core::ffi::c_void,
   length: u32,
   offset: u32,
+  outbuf: *mut core::ffi::c_void,
 ) -> u32 {
   let nv_readc = tpm1_nv_read_cmd {
     nvIndex: index,

@@ -1,4 +1,10 @@
-use libcros::{LOG, Logger, kv_get, kv_set, libargs::ArgCheck, tlcl::TlclReadWithOffset};
+use libcros::{
+  kv_get, kv_set, libargs::ArgCheck, tlcl::TlclReadWithOffset, Logger, LOG, LOG_FATAL,
+};
+
+const NV_INDEX: u32 = 0x1008;
+const SIZE: usize = 0xC;
+const OFFSET: u32 = 0x1;
 
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();
@@ -20,7 +26,22 @@ fn main() {
   Logger::init(verbose, true);
   let tpm = kv_get(libcros::keys::TPM_PATH);
 
-  LOG!("reading 0xC bytes from index 0x1008 at offset 0x1 {}", tpm);
-  let output = TlclReadWithOffset(0x1008, 0xC, 0x1);
-  LOG!("read output: {:02X?}", output);
+  LOG!(
+    "reading {} bytes from index {} at offset {} on {}",
+    SIZE,
+    NV_INDEX,
+    OFFSET,
+    tpm
+  );
+  let mut outbuf = [0u8; SIZE];
+  let rc = TlclReadWithOffset(
+    NV_INDEX,
+    SIZE as u32,
+    OFFSET,
+    outbuf.as_mut_ptr() as *mut core::ffi::c_void,
+  );
+  if rc != 0 {
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclReadWithOffset failed with error code: {:x}", rc);
+  }
+  LOG!("read output: {:02X?}", outbuf);
 }
