@@ -145,7 +145,6 @@ pub fn TlclDefineSpaceEx(
   }
 }
 
-
 pub fn TlclUndefineSpace(index: u32) -> u32 {
   TlclUndefineSpaceEx(None, 0, index)
 }
@@ -153,10 +152,7 @@ pub fn TlclUndefineSpace(index: u32) -> u32 {
 pub fn TlclUndefineSpaceEx(owner_auth: Option<&[u8]>, owner_auth_size: u32, index: u32) -> u32 {
   let perm = TlclGetPermissions(index);
   if perm == 0xFFFFFFFF {
-    LOG_DBG!(
-      "space 0x{:x} does not exist or query failed",
-      index
-    );
+    LOG_DBG!("space 0x{:x} does not exist or query failed", index);
     return 0xFFFFFFFF;
   }
   TlclDefineSpaceEx(owner_auth, owner_auth_size, index, perm, 0, (), 0)

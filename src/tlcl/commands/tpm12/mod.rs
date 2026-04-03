@@ -6,8 +6,7 @@ pub mod write;
 
 pub use clear::TlclForceClear;
 pub use define_space::{
-  TlclDefineSpace, TlclDefineSpaceEx, TlclGetPermissions,
-  TlclUndefineSpace, TlclUndefineSpaceEx,
+  TlclDefineSpace, TlclDefineSpaceEx, TlclGetPermissions, TlclUndefineSpace, TlclUndefineSpaceEx,
 };
 pub use physical_presence::{
   TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable, TlclSetEnable,

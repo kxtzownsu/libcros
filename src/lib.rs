@@ -1,15 +1,20 @@
-use std::{collections::HashMap, sync::Mutex};
+use std::{
+  collections::HashMap,
+  sync::{Mutex, OnceLock},
+};
 
-use once_cell::sync::Lazy;
+static KV: OnceLock<Mutex<HashMap<&'static str, String>>> = OnceLock::new();
 
-static KV: Lazy<Mutex<HashMap<&'static str, String>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+fn kv() -> &'static Mutex<HashMap<&'static str, String>> {
+  KV.get_or_init(|| Mutex::new(HashMap::new()))
+}
 
 pub fn kv_set(key: &'static str, val: impl ToString) {
-  KV.lock().unwrap().insert(key, val.to_string());
+  kv().lock().unwrap().insert(key, val.to_string());
 }
 
 pub fn kv_get(key: &'static str) -> String {
-  KV.lock().unwrap().get(key).cloned().unwrap_or_default()
+  kv().lock().unwrap().get(key).cloned().unwrap_or_default()
 }
 
 pub fn kv_get_bool(key: &'static str) -> bool {
@@ -19,6 +24,10 @@ pub fn kv_get_bool(key: &'static str) -> bool {
 pub mod keys {
   pub const TPM_PATH: &str = "tpm_path";
   pub const INTERNAL_DISK: &str = "internal_disk";
+
+  #[cfg(feature = "tlcl")]
+  #[cfg(feature = "tpm2_0")]
+  pub const TPM_TAG: &str = "tpm_tag";
 }
 
 pub mod logging;

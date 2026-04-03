@@ -1,8 +1,8 @@
 #![allow(non_snake_case)]
 
 use crate::{
-  LOG_DBG,
   tlcl::{tpm_exchange, unmarshal::unmarshal_response_code},
+  LOG_DBG,
 };
 
 #[rustfmt::skip]
