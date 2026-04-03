@@ -1,1 +1,2 @@
-reference/ linguist-vendored
+reference linguist-vendored
+reference/** linguist-vendored
