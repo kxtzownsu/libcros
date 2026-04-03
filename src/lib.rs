@@ -28,6 +28,10 @@ pub mod keys {
   #[cfg(feature = "tlcl")]
   #[cfg(feature = "tpm2_0")]
   pub const TPM_TAG: &str = "tpm_tag";
+
+  #[cfg(feature = "tlcl")]
+  #[cfg(feature = "tpm2_0")]
+  pub const PH_DISABLED: &str = "ph_disabled";
 }
 
 pub mod logging;

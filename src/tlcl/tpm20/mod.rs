@@ -6,12 +6,12 @@ pub mod marshal;
 pub mod types;
 pub mod unmarshal;
 
-use crate::{tlcl::vb2ex_tpm_send_recv, LOG_DBG};
+use crate::{LOG_DBG, tlcl::vb2ex_tpm_send_recv};
 
 pub fn tpm_get_response(
   command: constants::TPM_CC,
   command_body: *const core::ffi::c_void,
-  response: constants::tpm2_response,
+  response: &mut constants::tpm2_response,
 ) -> u32 {
   let mut cr_buffer = [0u8; 2048];
   let mut out_size: i32 = 0;
@@ -51,7 +51,9 @@ pub fn tpm_get_response(
     return crate::tlcl::constants::TPM_E_READ_FAILURE;
   }
 
-  LOG_DBG!("command {:#}, return code {:#}", command, res);
+  let tpm_code = unsafe { core::ptr::read_unaligned(core::ptr::addr_of!(response.hdr.tpm_code)) };
+
+  LOG_DBG!("command {:#}, return code {:#}", command, tpm_code);
 
   return crate::tlcl::constants::TPM_SUCCESS;
 }
@@ -59,9 +61,15 @@ pub fn tpm_get_response(
 pub fn tpm_send_receive(
   command: constants::TPM_CC,
   command_body: *const core::ffi::c_void,
-  response: constants::tpm2_response,
+  response: &mut constants::tpm2_response,
 ) -> u32 {
-  tpm_get_response(command, command_body, response)
+  let rv = tpm_get_response(command, command_body, response);
+
+  if rv != crate::tlcl::constants::TPM_SUCCESS {
+    return rv;
+  }
+
+  unsafe { core::ptr::read_unaligned(core::ptr::addr_of!(response.hdr.tpm_code)) }
 }
 
 pub fn tpm_get_response_code(
@@ -69,5 +77,5 @@ pub fn tpm_get_response_code(
   command_body: *const core::ffi::c_void,
 ) -> u32 {
   let mut response: constants::tpm2_response = unsafe { core::mem::zeroed() };
-  tpm_send_receive(command, command_body, response)
+  tpm_send_receive(command, command_body, &mut response)
 }

@@ -7,7 +7,7 @@ use std::{
   time::Duration,
 };
 
-use crate::{keys, kv_get, LOG};
+use crate::{keys, kv_get};
 
 pub const TPM_MAX_RETRIES: u32 = 5;
 pub const TPM_RETRY_DELAY_MS: u64 = 100;
@@ -18,6 +18,8 @@ pub fn tpm_xmit(
   recvbuf: *mut u8,
   recv_len: *mut usize,
 ) -> u32 {
+  const TPM_HEADER_SIZE: usize = 10;
+
   let tpm_path = kv_get(keys::TPM_PATH);
   let send_data = unsafe { core::slice::from_raw_parts(sendbuf, send_size) };
 
@@ -49,16 +51,45 @@ pub fn tpm_xmit(
 
   if !recvbuf.is_null() && !recv_len.is_null() {
     let recv_cap = unsafe { *recv_len };
+    if recv_cap < TPM_HEADER_SIZE {
+      return constants::TPM_E_RESPONSE_TOO_LARGE;
+    }
+
     let recv_data = unsafe { core::slice::from_raw_parts_mut(recvbuf, recv_cap) };
-    let received = match tpm_file.read(recv_data) {
-      Ok(n) => n,
-      Err(_) => return constants::TPM_E_COMMUNICATION_ERROR,
-    };
+
+    if tpm_file
+      .read_exact(&mut recv_data[..TPM_HEADER_SIZE])
+      .is_err()
+    {
+      return constants::TPM_E_COMMUNICATION_ERROR;
+    }
+
+    let total_size =
+      u32::from_be_bytes([recv_data[2], recv_data[3], recv_data[4], recv_data[5]]) as usize;
+
+    if total_size < TPM_HEADER_SIZE {
+      return constants::TPM_E_COMMUNICATION_ERROR;
+    }
+
+    if total_size > recv_cap {
+      unsafe {
+        *recv_len = total_size;
+      }
+      return constants::TPM_E_RESPONSE_TOO_LARGE;
+    }
+
+    if tpm_file
+      .read_exact(&mut recv_data[TPM_HEADER_SIZE..total_size])
+      .is_err()
+    {
+      return constants::TPM_E_COMMUNICATION_ERROR;
+    }
+
     unsafe {
-      *recv_len = received;
+      *recv_len = total_size;
     }
   }
-  
+
   return constants::TPM_SUCCESS;
 }
 

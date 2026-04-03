@@ -3,10 +3,10 @@
 #![allow(non_camel_case_types)]
 
 use crate::{
-  keys, kv_get, kv_set,
+  keys, kv_get, kv_get_bool, kv_set,
   tlcl::tpm20::constants::{
-    tpm2_session_header, tpm_header, TPM2_Clear, TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS,
-    TPM_ST_SESSIONS,
+    TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_Read,
+    tpm_header, tpm2_nv_read_cmd, tpm2_session_header,
   },
 };
 
@@ -209,6 +209,39 @@ pub fn marshal_clear(
   marshal_session_header(&mut buffer, &session_header, buffer_space);
 }
 
+pub fn marshal_nv_read(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_nv_read_cmd,
+  buffer_space: &mut i32,
+) {
+  let mut session_header: tpm2_session_header;
+  let command_body_ref: &tpm2_nv_read_cmd;
+
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+  unsafe {
+    command_body_ref = &*command_body;
+  }
+
+  if kv_get_bool(keys::PH_DISABLED) {
+    marshal_TPM_HANDLE(&mut buffer, command_body_ref.nvIndex, buffer_space)
+  } else {
+    marshal_TPM_HANDLE(&mut buffer, TPM_RH_PLATFORM, buffer_space)
+  }
+
+  marshal_TPM_HANDLE(&mut buffer, command_body_ref.nvIndex, buffer_space);
+  unsafe {
+    session_header = std::mem::zeroed();
+  }
+  session_header.session_handle = TPM_RS_PW;
+  marshal_session_header(&mut buffer, &session_header, buffer_space);
+  kv_set(keys::TPM_TAG, TPM_ST_SESSIONS);
+  marshal_u16(&mut buffer, command_body_ref.size, buffer_space);
+  marshal_u16(&mut buffer, command_body_ref.offset, buffer_space);
+}
+
 pub fn tpm_marshal_command(
   command: crate::tlcl::tpm20::constants::TPM_CC,
   tpm_command_body: *const core::ffi::c_void,
@@ -228,6 +261,13 @@ pub fn tpm_marshal_command(
     TPM2_Clear => {
       marshal_clear(cmd_body, tpm_command_body, &mut body_size);
     }
+
+    TPM2_NV_Read => marshal_nv_read(
+      cmd_body,
+      tpm_command_body as *mut tpm2_nv_read_cmd,
+      &mut body_size,
+    ),
+
     _ => {
       body_size = -1;
     }
