@@ -1,7 +1,11 @@
 #!/bin/bash
 
 PORT=2321
-TPM1_STATE_DIR=/usr/share/swtpm/tpm1
+if [ -n "$GITHUB_WORKFLOW" ]; then
+  TPM1_STATE_DIR=/tmp/swtpm/tpm1
+else
+  TPM1_STATE_DIR=/usr/share/swtpm/tpm1
+fi
 mkdir -p "$TPM1_STATE_DIR"
 
 # do we need to init tpm? (only needed on tpm 1.2)
