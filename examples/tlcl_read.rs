@@ -1,4 +1,7 @@
-use libcros::{LOG, Logger, kv_get, kv_set, libargs::ArgCheck, tlcl::TlclRead};
+use libcros::{LOG, LOG_FATAL, Logger, kv_get, kv_set, libargs::ArgCheck, tlcl::TlclRead};
+
+const NV_INDEX: u32 = 0x1008;
+const SIZE: usize = 0xD;
 
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();
@@ -20,7 +23,15 @@ fn main() {
   Logger::init(verbose, true);
   let tpm = kv_get(libcros::keys::TPM_PATH);
 
-  LOG!("reading 0xD bytes from index 0x1008 {}", tpm);
-  let output = TlclRead(0x1008, 0xD);
-  LOG!("read output: {:02X?}", output);
+  LOG!("reading {} bytes from index {} on {}", SIZE, NV_INDEX, tpm);
+  let mut outbuf = [0u8; SIZE];
+  let rc = TlclRead(
+    NV_INDEX,
+    outbuf.as_mut_ptr() as *mut core::ffi::c_void,
+    SIZE.try_into().unwrap(),
+  );
+  if rc != 0 {
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclRead failed with error code: {:x}", rc);
+  }
+  LOG!("read output: {:02X?}", outbuf);
 }

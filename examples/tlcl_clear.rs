@@ -38,7 +38,7 @@ fn main() {
   }
 
   /* on tpm2.0, this is the only one needed, everything else
-     is for tpm 1.2 */
+  is for tpm 1.2 */
   let rc = TlclForceClear();
   if rc != 0 {
     LOG_FATAL!(rc.try_into().unwrap(); "TlclForceClear failed with error code: {:x}", rc);
