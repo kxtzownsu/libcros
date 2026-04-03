@@ -24,7 +24,7 @@ jobs:
     - name: install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y swtpm tmux
+        sudo apt-get install -y swtpm swtpm-tools tmux
 
     - name: prepare vTPM proxy
       id: vtpm
