@@ -53,7 +53,7 @@ pub fn tpm_get_response(
 
   let tpm_code = unsafe { core::ptr::read_unaligned(core::ptr::addr_of!(response.hdr.tpm_code)) };
 
-  LOG_DBG!("command {:#}, return code {:#}", command, tpm_code);
+  LOG_DBG!("command 0x{:X}, return code 0x{:X}", command, tpm_code);
 
   return crate::tlcl::constants::TPM_SUCCESS;
 }

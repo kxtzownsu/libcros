@@ -3,8 +3,8 @@
 
 use crate::tlcl::tpm12::constants::{
   TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_ORD_ForceClear, TPM_ORD_NV_ReadValue,
-  TPM_ORD_PhysicalEnable, TPM_TAG_RQU_COMMAND, TSC_ORD_PhysicalPresence, tpm_header,
-  tpm1_nv_read_cmd, tpm1_physical_presence_cmd,
+  TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_TAG_RQU_COMMAND, TSC_ORD_PhysicalPresence,
+  tpm_header, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
 };
 
 pub fn write_be16(dest: *mut u8, val: u16) {
@@ -49,6 +49,24 @@ pub fn marshal_u32(buffer: &mut *mut u8, value: u32, buffer_space: &mut i32) {
   *buffer_space -= core::mem::size_of::<u32>() as i32;
 }
 
+pub fn marshal_blob(
+  buffer: &mut *mut u8,
+  blob: *const u8,
+  blob_size: usize,
+  buffer_space: &mut i32,
+) {
+  if *buffer_space < blob_size as i32 {
+    *buffer_space = -1;
+    return;
+  }
+
+  unsafe {
+    core::ptr::copy_nonoverlapping(blob, *buffer, blob_size);
+    *buffer = (*buffer).add(blob_size);
+  }
+  *buffer_space -= blob_size as i32;
+}
+
 pub fn marshal_force_clear(_buffer: *mut u8, _buffer_space: &mut i32) {}
 
 pub fn marshal_physical_enable(_buffer: *mut u8, _buffer_space: &mut i32) {}
@@ -87,6 +105,28 @@ pub fn marshal_nv_read(
   marshal_u32(&mut buffer, command_body_ref.size, buffer_space);
 }
 
+pub fn marshal_nv_write(
+  mut buffer: *mut u8,
+  command_body: *const tpm1_nv_write_cmd,
+  buffer_space: &mut i32,
+) {
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+
+  let command_body_ref = unsafe { &*command_body };
+  marshal_u32(&mut buffer, command_body_ref.nvIndex, buffer_space);
+  marshal_u32(&mut buffer, command_body_ref.offset, buffer_space);
+  marshal_u32(&mut buffer, command_body_ref.size, buffer_space);
+  marshal_blob(
+    &mut buffer,
+    command_body_ref.data,
+    command_body_ref.size as usize,
+    buffer_space,
+  );
+}
+
 pub fn tpm_marshal_command(
   command: TPM_COMMAND,
   tpm_command_body: *const core::ffi::c_void,
@@ -118,6 +158,13 @@ pub fn tpm_marshal_command(
       marshal_nv_read(
         cmd_body,
         tpm_command_body as *const tpm1_nv_read_cmd,
+        &mut body_size,
+      );
+    }
+    TPM_ORD_NV_WriteValue => {
+      marshal_nv_write(
+        cmd_body,
+        tpm_command_body as *const tpm1_nv_write_cmd,
         &mut body_size,
       );
     }

@@ -6,7 +6,8 @@ use crate::{
   keys, kv_get, kv_get_bool, kv_set,
   tlcl::tpm20::constants::{
     TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_Read,
-    tpm_header, tpm2_nv_read_cmd, tpm2_session_header,
+    TPM2B, TPMI_RH_NV_INDEX_OWNER_START, tpm_header, tpm2_nv_read_cmd, tpm2_nv_write_cmd,
+    tpm2_session_header,
   },
 };
 
@@ -84,6 +85,26 @@ pub fn marshal_u32(buffer: &mut *mut u8, value: u32, buffer_space: &mut i32) {
     *buffer = (*buffer).add(core::mem::size_of::<u32>());
   }
   *buffer_space -= core::mem::size_of::<u32>() as i32;
+}
+
+pub fn marshal_TPM2B(buffer: &mut *mut u8, data: &TPM2B, buffer_space: &mut i32) {
+  let total_size: usize = data.size as usize + std::mem::size_of::<u16>();
+
+  if total_size > *buffer_space as usize {
+    *buffer_space = -1;
+    return;
+  }
+
+  marshal_u16(buffer, data.size, buffer_space);
+  if data.size == 0 {
+    return;
+  }
+
+  unsafe {
+    core::ptr::copy_nonoverlapping(data.buffer, *buffer, data.size as usize);
+    *buffer = (*buffer).add(data.size as usize);
+  }
+  *buffer_space -= data.size as i32;
 }
 
 #[inline(always)]
@@ -193,6 +214,14 @@ pub fn marshal_session_header(
   marshal_fill_size_field(buffer, &mut size_field, false, buffer_space);
 }
 
+fn get_nv_index_write_auth(nv_index: u32) -> u32 {
+  if nv_index >= TPMI_RH_NV_INDEX_OWNER_START {
+    nv_index
+  } else {
+    TPM_RH_PLATFORM
+  }
+}
+
 pub fn marshal_clear(
   mut buffer: *mut u8,
   _command_body: *const core::ffi::c_void,
@@ -242,6 +271,38 @@ pub fn marshal_nv_read(
   marshal_u16(&mut buffer, command_body_ref.offset, buffer_space);
 }
 
+pub fn marshal_nv_write(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_nv_write_cmd,
+  buffer_space: &mut i32,
+) {
+  let mut session_header: tpm2_session_header;
+  let command_body_ref: &tpm2_nv_write_cmd;
+
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+  unsafe {
+    command_body_ref = &*command_body;
+  }
+
+  marshal_TPM_HANDLE(
+    &mut buffer,
+    get_nv_index_write_auth(command_body_ref.nvIndex),
+    buffer_space,
+  );
+  marshal_TPM_HANDLE(&mut buffer, command_body_ref.nvIndex, buffer_space);
+  unsafe {
+    session_header = std::mem::zeroed();
+  }
+  session_header.session_handle = TPM_RS_PW;
+  marshal_session_header(&mut buffer, &session_header, buffer_space);
+  kv_set(keys::TPM_TAG, TPM_ST_SESSIONS);
+  marshal_TPM2B(&mut buffer, &command_body_ref.data, buffer_space);
+  marshal_u16(&mut buffer, command_body_ref.offset, buffer_space);
+}
+
 pub fn tpm_marshal_command(
   command: crate::tlcl::tpm20::constants::TPM_CC,
   tpm_command_body: *const core::ffi::c_void,
@@ -265,6 +326,12 @@ pub fn tpm_marshal_command(
     TPM2_NV_Read => marshal_nv_read(
       cmd_body,
       tpm_command_body as *mut tpm2_nv_read_cmd,
+      &mut body_size,
+    ),
+
+    TPM2_NV_Write => marshal_nv_write(
+      cmd_body,
+      tpm_command_body as *mut tpm2_nv_write_cmd,
       &mut body_size,
     ),
 

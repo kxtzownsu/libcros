@@ -3,7 +3,7 @@
 use crate::tlcl::{
   constants::{TPM_E_READ_EMPTY, TPM_E_RESPONSE_TOO_LARGE, TPM_SUCCESS},
   tpm12::{
-    constants::{tpm1_nv_read_cmd, tpm1_response, TPM_ORD_NV_ReadValue},
+    constants::{TPM_ORD_NV_ReadValue, tpm1_nv_read_cmd, tpm1_response},
     tpm_send_receive,
   },
 };

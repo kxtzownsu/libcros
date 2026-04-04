@@ -1,10 +1,12 @@
 use libcros::{
-  LOG, LOG_FATAL, Logger, kv_get, kv_set, libargs::ArgCheck, tlcl::TlclReadWithOffset,
+  LOG, LOG_FATAL, Logger, kv_get, kv_set, libargs::ArgCheck, tlcl::TlclWriteWithOffset,
 };
 
 const NV_INDEX: u32 = 0x1008;
-const SIZE: usize = 0xC;
-const OFFSET: u32 = 0x1;
+// kernver 0x00010003
+const DATA: [u8; 12] = [
+  0x4C, 0x57, 0x52, 0x47, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xEC,
+];
 
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();
@@ -18,7 +20,7 @@ fn main() {
   args.check_help();
 
   if flags_tpm_path.is_empty() {
-    kv_set(libcros::keys::TPM_PATH, "/dev/tpm69");
+    kv_set(libcros::keys::TPM_PATH, "/dev/tpm0");
   } else {
     kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
   }
@@ -27,21 +29,19 @@ fn main() {
   let tpm = kv_get(libcros::keys::TPM_PATH);
 
   LOG!(
-    "reading {} bytes from index {} at offset {} on {}",
-    SIZE,
+    "writing {} bytes to index {} on {}",
+    DATA.len(),
     NV_INDEX,
-    OFFSET,
     tpm
   );
-  let mut outbuf = [0u8; SIZE];
-  let rc = TlclReadWithOffset(
+  let rc = TlclWriteWithOffset(
     NV_INDEX,
-    SIZE as u32,
-    OFFSET,
-    outbuf.as_mut_ptr() as *mut core::ffi::c_void,
+    DATA.as_ptr() as *const core::ffi::c_void,
+    DATA.len() as u32,
+    0x1,
   );
   if rc != 0 {
-    LOG_FATAL!(rc.try_into().unwrap(); "TlclReadWithOffset failed with error code: {:x}", rc);
+    LOG_FATAL!(rc.try_into().unwrap(); "TlclWrite failed with error code: {:x}", rc);
   }
-  LOG!("read output: {:02X?}", outbuf);
+  LOG!("write succeeded");
 }

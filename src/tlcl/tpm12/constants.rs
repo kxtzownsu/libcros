@@ -267,6 +267,14 @@ pub struct tpm1_nv_read_cmd {
 }
 
 #[repr(C)]
+pub struct tpm1_nv_write_cmd {
+  pub nvIndex: u32,
+  pub offset: u32,
+  pub size: u32,
+  pub data: *const u8,
+}
+
+#[repr(C)]
 pub struct tpm1_physical_presence_cmd {
   pub physical_presence: u16,
 }

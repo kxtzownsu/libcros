@@ -4,8 +4,8 @@
 use crate::{
   LOG_DBG,
   tlcl::tpm20::constants::{
-    TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_Read, TPM2B, nv_read_response,
-    tpm2_response,
+    TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_Read, TPM2_NV_Write, TPM2B,
+    nv_read_response, tpm2_response,
   },
 };
 
@@ -116,6 +116,10 @@ pub fn unmarshal_nv_read(buffer: &mut *const u8, size: &mut i32, nvr: &mut nv_re
   unmarshal_authorization_section(buffer, size, "NV_Read");
 }
 
+pub fn unmarshal_nv_write(buffer: &mut *const u8, size: &mut i32) {
+  unmarshal_authorization_section(buffer, size, "NV_Write");
+}
+
 pub fn tpm_unmarshal_response(
   command: TPM_CC,
   response_body: *const core::ffi::c_void,
@@ -142,25 +146,30 @@ pub fn tpm_unmarshal_response(
     return -1;
   }
 
-  if !cr_size.eq(&0) {
-    match command {
-      TPM2_NV_Read => {
-        let mut nvr = nv_read_response {
-          params_size: 0,
-          buffer: TPM2B {
-            size: 0,
-            buffer: core::ptr::null(),
-          },
-        };
-        unmarshal_nv_read(&mut buffer, &mut cr_size, &mut nvr);
-        response.body.nvr = core::mem::ManuallyDrop::new(nvr);
-      }
-      TPM2_Clear => {
-        cr_size = 0;
-      }
-      _ => {
-        return -1;
-      }
+  if cr_size == 0 {
+    return 0;
+  }
+
+  match command {
+    TPM2_NV_Read => {
+      let mut nvr = nv_read_response {
+        params_size: 0,
+        buffer: TPM2B {
+          size: 0,
+          buffer: core::ptr::null(),
+        },
+      };
+      unmarshal_nv_read(&mut buffer, &mut cr_size, &mut nvr);
+      response.body.nvr = core::mem::ManuallyDrop::new(nvr);
+    }
+    TPM2_NV_Write => {
+      cr_size = 0;
+    }
+    TPM2_Clear => {
+      cr_size = 0;
+    }
+    _ => {
+      return -1;
     }
   }
 
