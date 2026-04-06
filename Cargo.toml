@@ -10,7 +10,6 @@ categories = ["hardware-support", "embedded"]
 authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
 
 [dependencies]
-once_cell = "1.21.4"
 
 [features]
 tpm2_0 = []
