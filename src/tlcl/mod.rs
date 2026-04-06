@@ -7,7 +7,7 @@ use std::{
   time::Duration,
 };
 
-use crate::{keys, kv_get};
+use crate::{keys, kv_get, LOG_FATAL};
 
 pub const TPM_MAX_RETRIES: u32 = 5;
 pub const TPM_RETRY_DELAY_MS: u64 = 100;
@@ -20,7 +20,10 @@ pub fn tpm_xmit(
 ) -> u32 {
   const TPM_HEADER_SIZE: usize = 10;
 
-  let tpm_path = kv_get(keys::TPM_PATH);
+  let tpm_path: String = kv_get(keys::TPM_PATH);
+  if tpm_path.is_empty() {
+    LOG_FATAL!("TPM_PATH not set! cannot continue!");
+  }
   let send_data = unsafe { core::slice::from_raw_parts(sendbuf, send_size) };
 
   let mut tpm_file = {
