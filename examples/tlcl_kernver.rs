@@ -1,9 +1,10 @@
 #[cfg(feature = "tpm1_2")]
 use libcros::tlcl::tpm12::constants::{TPM_NV_PER_PPREAD, TPM_NV_PER_PPWRITE};
 use libcros::{
-  LOG, LOG_FATAL, Logger, kv_set,
+  kv_set,
   libargs::ArgCheck,
   tlcl::{TlclDefineSpace, TlclRead, TlclUndefineSpace, TlclWrite},
+  Logger, LOG, LOG_FATAL,
 };
 
 const NV_INDEX: u32 = 0x1008;
@@ -54,7 +55,7 @@ fn main() {
   let perm = TPM_NV_PER_PPWRITE | TPM_NV_PER_PPREAD;
 
   LOG!("undefining NV index 0x{:X}", NV_INDEX);
-  let rc = TlclUndefineSpace(NV_INDEX);
+  TlclUndefineSpace(NV_INDEX);
 
   LOG!(
     "defining NV index 0x{:X} with size {} and perm 0x{:X}",
@@ -69,25 +70,25 @@ fn main() {
 
   /* tpm2_nvwrite --hierarchy=p --input=kernver 0x1008 */
   LOG!("writing {} bytes to 0x{:X}", KERN_VER.len(), NV_INDEX);
-  let rc = TlclWrite(NV_INDEX, KERN_VER);
+  let rc = TlclWrite(
+    NV_INDEX,
+    KERN_VER.as_ptr() as *const core::ffi::c_void,
+    KERN_VER.len() as u32,
+  );
   if rc != 0 {
     LOG_FATAL!(rc.try_into().unwrap(); "TlclWrite failed with error code: {:x}", rc);
   }
 
-  let mut outbuf = [0u8, KERN_VER.len().try_into().unwrap()];
+  let mut outbuf = [0u8; KERN_VER.len()];
   let rc = TlclRead(
     NV_INDEX,
     outbuf.as_mut_ptr() as *mut core::ffi::c_void,
-    KERN_VER.len() as u16,
+    KERN_VER.len() as u32,
   );
   if rc != 0 {
     LOG_FATAL!(rc.try_into().unwrap(); "TlclRead failed with error code: {:x}", rc);
   }
 
-  if kernver.is_empty() {
-    LOG!("Read failed or returned no data.");
-  } else {
-    let hex_string: String = kernver.iter().map(|b| format!("{:02x} ", b)).collect();
-    LOG!("Kernel Version (hex): {}", hex_string);
-  }
+  let hex_string: String = outbuf.iter().map(|b| format!("{:02x} ", b)).collect();
+  LOG!("kernver (hex): {}", hex_string);
 }
