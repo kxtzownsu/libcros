@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: [tlcl_clear, tlcl_read, tlcl_read_with_offset, tlcl_write, tlcl_write_with_offset]
+        example: [tlcl_clear, tlcl_read, tlcl_read_with_offset, tlcl_write, tlcl_write_with_offset, tlcl_define_and_undefine]
         tpm_version: [tpm1_2, tpm2_0]
 
     steps:
@@ -68,6 +68,21 @@ jobs:
           echo "--| END   TPM LOG |--"
           exit 1
         fi
+
+    - name: prep tpm with required NV space(s)
+      if: steps.vtpm.outputs.available == 'true'
+      run: |
+        TPM_DEV=$(ls /dev/tpm[0-9]* 2>/dev/null | sort -V | tail -n 1)
+        if [[ -z "$TPM_DEV" ]]; then
+          echo "no tpm found in /dev."
+          tmux capture-pane -pt tpm-sim || true
+          exit 1
+        fi
+
+        echo "tpm dev: $TPM_DEV"
+
+        cargo build --example tlcl_kernver --features tlcl --features ${{ matrix.tpm_version }}
+        sudo ./target/debug/examples/tlcl_kernver --tpm-path "$TPM_DEV" --verbose
 
     - name: run example
       if: steps.vtpm.outputs.available == 'true'
