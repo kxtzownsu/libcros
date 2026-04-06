@@ -4,8 +4,9 @@
 use crate::{
   LOG_DBG,
   tlcl::tpm20::constants::{
-    TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_Read, TPM2_NV_Write, TPM2B,
-    nv_read_response, tpm2_response,
+    TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_DefineSpace, TPM2_NV_Read,
+    TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2B, TPMS_NV_PUBLIC,
+    nv_read_public_response, nv_read_response, tpm2_response,
   },
 };
 
@@ -120,6 +121,55 @@ pub fn unmarshal_nv_write(buffer: &mut *const u8, size: &mut i32) {
   unmarshal_authorization_section(buffer, size, "NV_Write");
 }
 
+pub fn unmarshal_TPMS_NV_PUBLIC(
+  buffer: &mut *const u8,
+  size: &mut i32,
+  pub_data: &mut TPMS_NV_PUBLIC,
+) {
+  let mut tpm2b_size = unmarshal_u16(buffer, size) as i32;
+  if tpm2b_size > *size {
+    *size = -1;
+    return;
+  }
+  *size -= tpm2b_size;
+
+  pub_data.nvIndex = unmarshal_u32(buffer, &mut tpm2b_size);
+  pub_data.nameAlg = unmarshal_u16(buffer, &mut tpm2b_size);
+  pub_data.attributes = unmarshal_u32(buffer, &mut tpm2b_size);
+  unmarshal_TPM2B(buffer, &mut tpm2b_size, &mut pub_data.authPolicy);
+  pub_data.dataSize = unmarshal_u16(buffer, &mut tpm2b_size);
+
+  if tpm2b_size != 0 {
+    *size = -1;
+  }
+}
+
+pub fn unmarshal_nv_read_public(
+  buffer: &mut *const u8,
+  size: &mut i32,
+  nv_pub: &mut nv_read_public_response,
+) {
+  let mut nv_public: TPMS_NV_PUBLIC = unsafe { core::mem::zeroed() };
+  let mut nv_name: TPM2B = unsafe { core::mem::zeroed() };
+
+  unmarshal_TPMS_NV_PUBLIC(buffer, size, &mut nv_public);
+  unmarshal_TPM2B(buffer, size, &mut nv_name);
+
+  if *size < 0 {
+    return;
+  }
+
+  if *size > 0 {
+    *size = -1;
+    return;
+  }
+
+  unsafe {
+    core::ptr::addr_of_mut!(nv_pub.nvPublic).write_unaligned(nv_public);
+    core::ptr::addr_of_mut!(nv_pub.nvName).write_unaligned(nv_name);
+  }
+}
+
 pub fn tpm_unmarshal_response(
   command: TPM_CC,
   response_body: *const core::ffi::c_void,
@@ -162,7 +212,18 @@ pub fn tpm_unmarshal_response(
       unmarshal_nv_read(&mut buffer, &mut cr_size, &mut nvr);
       response.body.nvr = core::mem::ManuallyDrop::new(nvr);
     }
+    TPM2_NV_ReadPublic => {
+      let mut nv_pub: nv_read_public_response = unsafe { core::mem::zeroed() };
+      unmarshal_nv_read_public(&mut buffer, &mut cr_size, &mut nv_pub);
+      response.body.nv_read_public = core::mem::ManuallyDrop::new(nv_pub);
+    }
     TPM2_NV_Write => {
+      cr_size = 0;
+    }
+    TPM2_NV_DefineSpace => {
+      cr_size = 0;
+    }
+    TPM2_NV_UndefineSpace => {
       cr_size = 0;
     }
     TPM2_Clear => {

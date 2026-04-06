@@ -5,9 +5,11 @@
 use crate::{
   keys, kv_get, kv_get_bool, kv_set,
   tlcl::tpm20::constants::{
-    TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_Read,
-    TPM2B, TPMI_RH_NV_INDEX_OWNER_START, tpm_header, tpm2_nv_read_cmd, tpm2_nv_write_cmd,
-    tpm2_session_header,
+    TPM_RH_OWNER, TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear,
+    TPM2_NV_DefineSpace, TPM2_NV_Read, TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write,
+    TPM2B, TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START, TPMS_NV_PUBLIC, tpm_header,
+    tpm2_nv_define_space_cmd, tpm2_nv_read_cmd, tpm2_nv_read_public_cmd,
+    tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header,
   },
 };
 
@@ -105,6 +107,30 @@ pub fn marshal_TPM2B(buffer: &mut *mut u8, data: &TPM2B, buffer_space: &mut i32)
     *buffer = (*buffer).add(data.size as usize);
   }
   *buffer_space -= data.size as i32;
+}
+
+pub fn marshal_TPMS_NV_PUBLIC(
+  mut buffer: &mut *mut u8,
+  data: &mut TPMS_NV_PUBLIC,
+  buffer_space: &mut i32,
+) {
+  let mut size_field: tpm2_marshal_size_field = unsafe { std::mem::zeroed() };
+
+  /* Skip room for the size. */
+  marshal_reserve_size_field(
+    buffer,
+    &mut size_field,
+    std::mem::size_of::<u16>() as i32,
+    buffer_space,
+  );
+
+  marshal_TPM_HANDLE(&mut buffer, data.nvIndex, buffer_space);
+  marshal_ALG_ID(&mut buffer, data.nameAlg, buffer_space);
+  marshal_u32(&mut buffer, data.attributes, buffer_space);
+  marshal_TPM2B(&mut buffer, &data.authPolicy, buffer_space);
+  marshal_u16(&mut buffer, data.dataSize, buffer_space);
+
+  marshal_fill_size_field(buffer, &mut size_field, false, buffer_space);
 }
 
 #[inline(always)]
@@ -303,6 +329,81 @@ pub fn marshal_nv_write(
   marshal_u16(&mut buffer, command_body_ref.offset, buffer_space);
 }
 
+pub fn marshal_nv_define_space(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_nv_define_space_cmd,
+  buffer_space: &mut i32,
+) {
+  let mut session_header: tpm2_session_header;
+  let command_body_ref: &mut tpm2_nv_define_space_cmd;
+
+  unsafe {
+    command_body_ref = &mut *command_body;
+  }
+
+  if command_body_ref.publicInfo.attributes & TPMA_NV_PLATFORMCREATE != 0 {
+    marshal_TPM_HANDLE(&mut buffer, TPM_RH_PLATFORM, buffer_space)
+  } else {
+    marshal_TPM_HANDLE(&mut buffer, TPM_RH_OWNER, buffer_space)
+  }
+
+  unsafe {
+    session_header = std::mem::zeroed();
+  }
+
+  session_header.session_handle = TPM_RS_PW;
+  marshal_session_header(&mut buffer, &session_header, buffer_space);
+  kv_set(keys::TPM_TAG, TPM_ST_SESSIONS);
+
+  marshal_TPM2B(&mut buffer, &command_body_ref.auth, buffer_space);
+  marshal_TPMS_NV_PUBLIC(&mut buffer, &mut command_body_ref.publicInfo, buffer_space);
+}
+
+pub fn marshal_nv_read_public(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_nv_read_public_cmd,
+  buffer_space: &mut i32,
+) {
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+
+  let command_body_ref = unsafe { &*command_body };
+  marshal_TPM_HANDLE(&mut buffer, command_body_ref.nvIndex, buffer_space);
+}
+
+pub fn marshal_nv_undefine_space(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_nv_undefine_space_cmd,
+  buffer_space: &mut i32,
+) {
+  let mut session_header: tpm2_session_header;
+  let command_body_ref: &tpm2_nv_undefine_space_cmd;
+
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+  unsafe {
+    command_body_ref = &*command_body;
+  }
+
+  if command_body_ref.use_platform_auth != 0 {
+    marshal_TPM_HANDLE(&mut buffer, TPM_RH_PLATFORM, buffer_space);
+  } else {
+    marshal_TPM_HANDLE(&mut buffer, TPM_RH_OWNER, buffer_space);
+  }
+  marshal_TPM_HANDLE(&mut buffer, command_body_ref.nvIndex, buffer_space);
+
+  unsafe {
+    session_header = std::mem::zeroed();
+  }
+  session_header.session_handle = TPM_RS_PW;
+  marshal_session_header(&mut buffer, &session_header, buffer_space);
+  kv_set(keys::TPM_TAG, TPM_ST_SESSIONS);
+}
+
 pub fn tpm_marshal_command(
   command: crate::tlcl::tpm20::constants::TPM_CC,
   tpm_command_body: *const core::ffi::c_void,
@@ -332,6 +433,24 @@ pub fn tpm_marshal_command(
     TPM2_NV_Write => marshal_nv_write(
       cmd_body,
       tpm_command_body as *mut tpm2_nv_write_cmd,
+      &mut body_size,
+    ),
+
+    TPM2_NV_DefineSpace => marshal_nv_define_space(
+      cmd_body,
+      tpm_command_body as *mut tpm2_nv_define_space_cmd,
+      &mut body_size,
+    ),
+
+    TPM2_NV_UndefineSpace => marshal_nv_undefine_space(
+      cmd_body,
+      tpm_command_body as *mut tpm2_nv_undefine_space_cmd,
+      &mut body_size,
+    ),
+
+    TPM2_NV_ReadPublic => marshal_nv_read_public(
+      cmd_body,
+      tpm_command_body as *mut tpm2_nv_read_public_cmd,
       &mut body_size,
     ),
 

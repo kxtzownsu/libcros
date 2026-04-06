@@ -275,6 +275,14 @@ pub struct tpm1_nv_write_cmd {
 }
 
 #[repr(C)]
+pub struct tpm1_nv_define_space_cmd {
+  pub nvIndex: u32,
+  pub perm: u32,
+  pub size: u32,
+  pub auth_policy: *const TPM_NV_AUTH_POLICY,
+}
+
+#[repr(C)]
 pub struct tpm1_physical_presence_cmd {
   pub physical_presence: u16,
 }

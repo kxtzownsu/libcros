@@ -20,7 +20,7 @@ pub fn tpm_get_response(
 
   out_size = marshal::tpm_marshal_command(command, command_body, &mut cr_buffer, 2048); // 2048 == sizeof(cr_buffer)
   if out_size < 0 {
-    LOG_DBG!("command {:#}, failed to serialize", command);
+    LOG_DBG!("command 0x{:X}, failed to serialize", command);
     return crate::tlcl::constants::TPM_E_WRITE_FAILURE;
   }
 
@@ -47,7 +47,7 @@ pub fn tpm_get_response(
     response,
   ) < 0
   {
-    LOG_DBG!("command {:#}, failed to parse response", command);
+    LOG_DBG!("command 0x{:X}, failed to parse response", command);
     return crate::tlcl::constants::TPM_E_READ_FAILURE;
   }
 

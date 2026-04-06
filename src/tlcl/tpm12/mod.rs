@@ -1,6 +1,7 @@
 pub mod constants;
 pub mod marshal;
 pub mod unmarshal;
+pub mod utils;
 
 use crate::{LOG_DBG, tlcl::vb2ex_tpm_send_recv};
 

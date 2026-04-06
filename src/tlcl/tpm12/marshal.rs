@@ -2,9 +2,10 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::tpm12::constants::{
-  TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_ORD_ForceClear, TPM_ORD_NV_ReadValue,
-  TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_TAG_RQU_COMMAND, TSC_ORD_PhysicalPresence,
-  tpm_header, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
+  TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace,
+  TPM_ORD_NV_ReadValue, TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_TAG_RQU_COMMAND,
+  TSC_ORD_PhysicalPresence, tpm_header, tpm1_nv_define_space_cmd, tpm1_nv_read_cmd,
+  tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
 };
 
 pub fn write_be16(dest: *mut u8, val: u16) {
@@ -127,6 +128,36 @@ pub fn marshal_nv_write(
   );
 }
 
+pub fn marshal_nv_define_space(
+  mut buffer: *mut u8,
+  command_body: *const tpm1_nv_define_space_cmd,
+  buffer_space: &mut i32,
+) {
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+
+  let command_body_ref = unsafe { &*command_body };
+  let mut empty_policy: crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY =
+    unsafe { core::mem::zeroed() };
+  let policy = if command_body_ref.auth_policy.is_null() {
+    &mut empty_policy as *mut crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY
+  } else {
+    command_body_ref.auth_policy as *mut crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY
+  };
+
+  marshal_u32(&mut buffer, command_body_ref.nvIndex, buffer_space);
+  marshal_u32(&mut buffer, command_body_ref.perm, buffer_space);
+  marshal_u32(&mut buffer, command_body_ref.size, buffer_space);
+  marshal_blob(
+    &mut buffer,
+    policy as *const u8,
+    core::mem::size_of::<crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY>(),
+    buffer_space,
+  );
+}
+
 pub fn tpm_marshal_command(
   command: TPM_COMMAND,
   tpm_command_body: *const core::ffi::c_void,
@@ -165,6 +196,13 @@ pub fn tpm_marshal_command(
       marshal_nv_write(
         cmd_body,
         tpm_command_body as *const tpm1_nv_write_cmd,
+        &mut body_size,
+      );
+    }
+    TPM_ORD_NV_DefineSpace => {
+      marshal_nv_define_space(
+        cmd_body,
+        tpm_command_body as *const tpm1_nv_define_space_cmd,
         &mut body_size,
       );
     }

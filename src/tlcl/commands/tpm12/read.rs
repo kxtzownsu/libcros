@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::{
-  constants::{TPM_E_READ_EMPTY, TPM_E_RESPONSE_TOO_LARGE, TPM_SUCCESS},
+  constants::{TPM_E_NO_SUCH_COMMAND, TPM_E_READ_EMPTY, TPM_E_RESPONSE_TOO_LARGE, TPM_SUCCESS},
   tpm12::{
     constants::{TPM_ORD_NV_ReadValue, tpm1_nv_read_cmd, tpm1_response},
     tpm_send_receive,
@@ -51,4 +51,8 @@ pub fn TlclReadWithOffset(
   }
 
   TPM_SUCCESS
+}
+
+pub fn TlclNVReadPublic(_index: u32, _presp: *mut core::ffi::c_void) -> u32 {
+  TPM_E_NO_SUCH_COMMAND
 }
