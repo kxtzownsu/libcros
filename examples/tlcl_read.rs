@@ -15,7 +15,7 @@ fn main() {
   args.check_help();
 
   if flags_tpm_path.is_empty() {
-    kv_set(libcros::keys::TPM_PATH, "/dev/tpm69");
+    kv_set(libcros::keys::TPM_PATH, "/dev/tpm0");
   } else {
     kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
   }
