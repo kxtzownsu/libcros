@@ -2,11 +2,10 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::tpm12::constants::{
+  TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace,
+  TPM_ORD_NV_ReadValue, TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_TAG_NV_ATTRIBUTES,
+  TPM_TAG_NV_DATA_PUBLIC, TPM_TAG_RQU_COMMAND, TSC_ORD_PhysicalPresence, tpm_header,
   tpm1_nv_define_space_cmd, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
-  tpm_header, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace, TPM_ORD_NV_ReadValue,
-  TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TSC_ORD_PhysicalPresence, TPM_BUFFER_SIZE,
-  TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_TAG_NV_ATTRIBUTES, TPM_TAG_NV_DATA_PUBLIC,
-  TPM_TAG_RQU_COMMAND,
 };
 
 pub fn write_be16(dest: *mut u8, val: u16) {

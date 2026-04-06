@@ -1,10 +1,8 @@
 #![allow(non_snake_case)]
 
-use crate::tlcl::{
-  tpm12::constants::{
-    TPM_ALL_LOCALITIES, TPM_DIGEST, TPM_LOC_THREE, TPM_NV_AUTH_POLICY,
-    TPM_PCR_INFO_SHORT, TPM_PCR_SELECTION,
-  },
+use crate::tlcl::tpm12::constants::{
+  TPM_ALL_LOCALITIES, TPM_DIGEST, TPM_LOC_THREE, TPM_NV_AUTH_POLICY, TPM_PCR_INFO_SHORT,
+  TPM_PCR_SELECTION,
 };
 
 const EMPTY_PCR_SELECTION_SHA1: [u8; 20] = [

@@ -1,10 +1,9 @@
 #[cfg(feature = "tpm1_2")]
 use libcros::tlcl::tpm12::constants::{TPM_NV_PER_PPREAD, TPM_NV_PER_PPWRITE};
 use libcros::{
-  kv_set,
+  LOG, LOG_FATAL, Logger, kv_set,
   libargs::ArgCheck,
   tlcl::{TlclDefineSpace, TlclRead, TlclUndefineSpace, TlclWrite},
-  Logger, LOG, LOG_FATAL,
 };
 
 const NV_INDEX: u32 = 0x1008;
