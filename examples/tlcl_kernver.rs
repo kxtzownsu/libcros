@@ -36,7 +36,7 @@ fn main() {
   /* platform hierarchy on TPM 1.2 requires physical presence */
   #[cfg(feature = "tpm1_2")]
   {
-    use libcros::tlcl::{TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable};
+    use libcros::tlcl::{TlclAssertPhysicalPresence, TlclPhysicalPresenceCMDEnable, TlclSetEnable};
     let rc = TlclPhysicalPresenceCMDEnable();
     if rc != 0 {
       LOG_FATAL!("PhysicalPresenceCMDEnable failed: 0x{:X}", rc);
@@ -44,6 +44,10 @@ fn main() {
     let rc = TlclAssertPhysicalPresence();
     if rc != 0 {
       LOG_FATAL!("AssertPhysicalPresence failed: 0x{:X}", rc);
+    }
+    let rc = TlclSetEnable();
+    if rc != 0 {
+      LOG_FATAL!("TlclSetEnable failed: 0x{:X}", rc);
     }
   }
 
