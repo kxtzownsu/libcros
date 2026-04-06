@@ -1,6 +1,6 @@
 [package]
 name = "libcros"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 description = "A Rust library that provides easy-to-use functions for interacting with a Chrome device"
 license = "GPL-3.0-only"
