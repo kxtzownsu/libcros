@@ -7,12 +7,15 @@ use crate::tlcl::{
   },
   tpm12::{
     constants::{
-      TPM_AUTH_DATA_LEN, TPM_BUFFER_SIZE, TPM_CAP_NV_INDEX, TPM_NV_AUTH_POLICY,
-      TPM_ORD_GetCapability, TPM_ORD_NV_DefineSpace, TPM_TAG_RQU_COMMAND, TPM_TAG_RSP_COMMAND,
-      tpm1_nv_define_space_cmd,
+      tpm1_nv_define_space_cmd, TPM_ORD_GetCapability, TPM_ORD_NV_DefineSpace, TPM_AUTH_DATA_LEN,
+      TPM_BUFFER_SIZE, TPM_CAP_NV_INDEX, TPM_NV_AUTH_POLICY, TPM_TAG_RQU_COMMAND,
+      TPM_TAG_RSP_COMMAND,
     },
     tpm_get_response_code,
-    utils::{decode_pcr_info, read_be16, read_be32, write_be16, write_be32},
+    utils::{
+      decode_pcr_info, init_default_nv_auth_policy, init_define_space_default_auth_policy,
+      read_be16, read_be32, write_be16, write_be32,
+    },
   },
   vb2ex_tpm_send_recv,
 };
@@ -66,11 +69,19 @@ pub fn TlclDefineSpaceEx(
     return TPM_E_BUFFER_SIZE;
   }
 
+  let mut default_policy: TPM_NV_AUTH_POLICY = unsafe { core::mem::zeroed() };
+  let policy_ref = if auth_policy.is_null() {
+    init_define_space_default_auth_policy(&mut default_policy);
+    &default_policy
+  } else {
+    unsafe { &*(auth_policy as *const TPM_NV_AUTH_POLICY) }
+  };
+
   let cmd = tpm1_nv_define_space_cmd {
     nvIndex: index,
     perm,
     size,
-    auth_policy: auth_policy as *const TPM_NV_AUTH_POLICY,
+    auth_policy: policy_ref as *const TPM_NV_AUTH_POLICY,
   };
 
   tpm_get_response_code(
@@ -93,9 +104,7 @@ pub fn TlclInitNvAuthPolicy(
     return TPM_E_BUFFER_SIZE;
   }
 
-  unsafe {
-    core::ptr::write_bytes(auth_policy as *mut u8, 0, required as usize);
-  }
+  init_default_nv_auth_policy(auth_policy as *mut TPM_NV_AUTH_POLICY);
 
   TPM_SUCCESS
 }

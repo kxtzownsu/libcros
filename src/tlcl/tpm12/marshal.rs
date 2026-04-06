@@ -2,10 +2,11 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::tpm12::constants::{
-  TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace,
-  TPM_ORD_NV_ReadValue, TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_TAG_RQU_COMMAND,
-  TSC_ORD_PhysicalPresence, tpm_header, tpm1_nv_define_space_cmd, tpm1_nv_read_cmd,
-  tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
+  tpm1_nv_define_space_cmd, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
+  tpm_header, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace, TPM_ORD_NV_ReadValue,
+  TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TSC_ORD_PhysicalPresence, TPM_BUFFER_SIZE,
+  TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_TAG_NV_ATTRIBUTES, TPM_TAG_NV_DATA_PUBLIC,
+  TPM_TAG_RQU_COMMAND,
 };
 
 pub fn write_be16(dest: *mut u8, val: u16) {
@@ -35,6 +36,19 @@ pub fn marshal_u16(buffer: &mut *mut u8, value: u16, buffer_space: &mut i32) {
     *buffer = (*buffer).add(core::mem::size_of::<u16>());
   }
   *buffer_space -= core::mem::size_of::<u16>() as i32;
+}
+
+pub fn marshal_u8(buffer: &mut *mut u8, value: u8, buffer_space: &mut i32) {
+  if *buffer_space < core::mem::size_of::<u8>() as i32 {
+    *buffer_space = -1;
+    return;
+  }
+
+  unsafe {
+    **buffer = value;
+    *buffer = (*buffer).add(core::mem::size_of::<u8>());
+  }
+  *buffer_space -= core::mem::size_of::<u8>() as i32;
 }
 
 pub fn marshal_u32(buffer: &mut *mut u8, value: u32, buffer_space: &mut i32) {
@@ -139,23 +153,34 @@ pub fn marshal_nv_define_space(
   }
 
   let command_body_ref = unsafe { &*command_body };
-  let mut empty_policy: crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY =
-    unsafe { core::mem::zeroed() };
-  let policy = if command_body_ref.auth_policy.is_null() {
-    &mut empty_policy as *mut crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY
-  } else {
-    command_body_ref.auth_policy as *mut crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY
-  };
 
+  marshal_u16(&mut buffer, TPM_TAG_NV_DATA_PUBLIC, buffer_space);
   marshal_u32(&mut buffer, command_body_ref.nvIndex, buffer_space);
-  marshal_u32(&mut buffer, command_body_ref.perm, buffer_space);
-  marshal_u32(&mut buffer, command_body_ref.size, buffer_space);
+
+  if command_body_ref.auth_policy.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+
   marshal_blob(
     &mut buffer,
-    policy as *const u8,
+    command_body_ref.auth_policy as *const u8,
     core::mem::size_of::<crate::tlcl::tpm12::constants::TPM_NV_AUTH_POLICY>(),
     buffer_space,
   );
+
+  marshal_u16(&mut buffer, TPM_TAG_NV_ATTRIBUTES, buffer_space);
+  marshal_u32(&mut buffer, command_body_ref.perm, buffer_space);
+  marshal_u8(&mut buffer, 0, buffer_space);
+  marshal_u8(&mut buffer, 0, buffer_space);
+  marshal_u8(&mut buffer, 0, buffer_space);
+  marshal_u32(&mut buffer, command_body_ref.size, buffer_space);
+
+  marshal_u32(&mut buffer, 0, buffer_space);
+  marshal_u32(&mut buffer, 0, buffer_space);
+  marshal_u32(&mut buffer, 0, buffer_space);
+  marshal_u32(&mut buffer, 0, buffer_space);
+  marshal_u32(&mut buffer, 0, buffer_space);
 }
 
 pub fn tpm_marshal_command(

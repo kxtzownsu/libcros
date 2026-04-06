@@ -1,6 +1,16 @@
 #![allow(non_snake_case)]
 
-use crate::tlcl::tpm12::constants::{TPM_DIGEST, TPM_PCR_INFO_SHORT, TPM_PCR_SELECTION};
+use crate::tlcl::{
+  tpm12::constants::{
+    TPM_ALL_LOCALITIES, TPM_DIGEST, TPM_LOC_THREE, TPM_NV_AUTH_POLICY,
+    TPM_PCR_INFO_SHORT, TPM_PCR_SELECTION,
+  },
+};
+
+const EMPTY_PCR_SELECTION_SHA1: [u8; 20] = [
+  0x79, 0xdd, 0xda, 0xfd, 0xc1, 0x97, 0xdc, 0xcc, 0xe9, 0x98, 0x9a, 0xee, 0xf5, 0x52, 0x89, 0xee,
+  0x24, 0x96, 0x4c, 0xac,
+];
 
 pub fn read_be16(src: *const u8) -> u16 {
   unsafe { ((*src.add(0) as u16) << 8) | ((*src.add(1) as u16) << 0) }
@@ -77,4 +87,38 @@ pub fn decode_pcr_info(
     pcr_info.write_unaligned(info);
   }
   true
+}
+
+pub fn init_default_nv_auth_policy(policy: *mut TPM_NV_AUTH_POLICY) {
+  let pcr_info = TPM_PCR_INFO_SHORT {
+    pcrSelection: TPM_PCR_SELECTION {
+      sizeOfSelect: u16::from_be(3),
+      pcrSelect: [0, 0, 0],
+    },
+    localityAtRelease: (TPM_ALL_LOCALITIES & !TPM_LOC_THREE) as u8,
+    digestAtRelease: TPM_DIGEST {
+      digest: EMPTY_PCR_SELECTION_SHA1,
+    },
+  };
+
+  unsafe {
+    core::ptr::addr_of_mut!((*policy).pcr_info_read).write_unaligned(pcr_info);
+    core::ptr::addr_of_mut!((*policy).pcr_info_write).write_unaligned(pcr_info);
+  }
+}
+
+pub fn init_define_space_default_auth_policy(policy: *mut TPM_NV_AUTH_POLICY) {
+  let pcr_info = TPM_PCR_INFO_SHORT {
+    pcrSelection: TPM_PCR_SELECTION {
+      sizeOfSelect: u16::from_be(3),
+      pcrSelect: [0, 0, 0],
+    },
+    localityAtRelease: TPM_ALL_LOCALITIES as u8,
+    digestAtRelease: TPM_DIGEST { digest: [0u8; 20] },
+  };
+
+  unsafe {
+    core::ptr::addr_of_mut!((*policy).pcr_info_read).write_unaligned(pcr_info);
+    core::ptr::addr_of_mut!((*policy).pcr_info_write).write_unaligned(pcr_info);
+  }
 }
