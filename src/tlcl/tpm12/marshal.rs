@@ -3,9 +3,10 @@
 
 use crate::tlcl::tpm12::constants::{
   TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace,
-  TPM_ORD_NV_ReadValue, TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_TAG_NV_ATTRIBUTES,
-  TPM_TAG_NV_DATA_PUBLIC, TPM_TAG_RQU_COMMAND, TSC_ORD_PhysicalPresence, tpm_header,
-  tpm1_nv_define_space_cmd, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
+  TPM_ORD_NV_ReadValue, TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_ORD_SaveState,
+  TPM_ORD_Startup, TPM_TAG_NV_ATTRIBUTES, TPM_TAG_NV_DATA_PUBLIC, TPM_TAG_RQU_COMMAND,
+  TSC_ORD_PhysicalPresence, tpm_header, tpm1_nv_define_space_cmd, tpm1_nv_read_cmd,
+  tpm1_nv_write_cmd, tpm1_physical_presence_cmd, tpm1_startup_cmd,
 };
 
 pub fn write_be16(dest: *mut u8, val: u16) {
@@ -182,6 +183,22 @@ pub fn marshal_nv_define_space(
   marshal_u32(&mut buffer, 0, buffer_space);
 }
 
+pub fn marshal_startup(
+  mut buffer: *mut u8,
+  command_body: *const tpm1_startup_cmd,
+  buffer_space: &mut i32,
+) {
+  if command_body.is_null() {
+    *buffer_space = -1;
+    return;
+  }
+
+  let command_body_ref = unsafe { &*command_body };
+  marshal_u16(&mut buffer, command_body_ref.startup_type, buffer_space);
+}
+
+pub fn marshal_savestate(_buffer: *mut u8, _buffer_space: &mut i32) {}
+
 pub fn tpm_marshal_command(
   command: TPM_COMMAND,
   tpm_command_body: *const core::ffi::c_void,
@@ -229,6 +246,16 @@ pub fn tpm_marshal_command(
         tpm_command_body as *const tpm1_nv_define_space_cmd,
         &mut body_size,
       );
+    }
+    TPM_ORD_Startup => {
+      marshal_startup(
+        cmd_body,
+        tpm_command_body as *const tpm1_startup_cmd,
+        &mut body_size,
+      );
+    }
+    TPM_ORD_SaveState => {
+      marshal_savestate(cmd_body, &mut body_size);
     }
     _ => {
       body_size = -1;

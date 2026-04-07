@@ -287,6 +287,11 @@ pub struct tpm1_physical_presence_cmd {
   pub physical_presence: u16,
 }
 
+#[repr(C)]
+pub struct tpm1_startup_cmd {
+  pub startup_type: u16,
+}
+
 #[repr(C, packed)]
 pub struct tpm_header {
   pub tpm_tag: u16,

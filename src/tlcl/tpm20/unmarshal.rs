@@ -5,8 +5,8 @@ use crate::{
   LOG_DBG,
   tlcl::tpm20::constants::{
     TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_DefineSpace, TPM2_NV_Read,
-    TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2B, TPMS_NV_PUBLIC,
-    nv_read_public_response, nv_read_response, tpm2_response,
+    TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown, TPM2_Startup, TPM2B,
+    TPMS_NV_PUBLIC, nv_read_public_response, nv_read_response, tpm2_response,
   },
 };
 
@@ -217,16 +217,12 @@ pub fn tpm_unmarshal_response(
       unmarshal_nv_read_public(&mut buffer, &mut cr_size, &mut nv_pub);
       response.body.nv_read_public = core::mem::ManuallyDrop::new(nv_pub);
     }
-    TPM2_NV_Write => {
-      cr_size = 0;
-    }
-    TPM2_NV_DefineSpace => {
-      cr_size = 0;
-    }
-    TPM2_NV_UndefineSpace => {
-      cr_size = 0;
-    }
-    TPM2_Clear => {
+    TPM2_NV_Write
+    | TPM2_NV_DefineSpace
+    | TPM2_NV_UndefineSpace
+    | TPM2_Clear
+    | TPM2_Startup
+    | TPM2_Shutdown => {
       cr_size = 0;
     }
     _ => {

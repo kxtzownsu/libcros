@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: [tlcl_clear, tlcl_read, tlcl_read_with_offset, tlcl_write, tlcl_write_with_offset, tlcl_define_and_undefine]
+        example: [tlcl_clear, tlcl_read, tlcl_read_with_offset, tlcl_write, tlcl_write_with_offset, tlcl_define_and_undefine, tlcl_startup, tlcl_save_state, tlcl_resume]
         tpm_version: [tpm1_2, tpm2_0]
 
     steps:

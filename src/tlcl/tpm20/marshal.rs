@@ -7,9 +7,10 @@ use crate::{
   tlcl::tpm20::constants::{
     TPM_RH_OWNER, TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear,
     TPM2_NV_DefineSpace, TPM2_NV_Read, TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write,
-    TPM2B, TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START, TPMS_NV_PUBLIC, tpm_header,
-    tpm2_nv_define_space_cmd, tpm2_nv_read_cmd, tpm2_nv_read_public_cmd,
-    tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header,
+    TPM2_Shutdown, TPM2_Startup, TPM2B, TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START,
+    TPMS_NV_PUBLIC, tpm_header, tpm2_nv_define_space_cmd, tpm2_nv_read_cmd,
+    tpm2_nv_read_public_cmd, tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header,
+    tpm2_shutdown_cmd, tpm2_startup_cmd,
   },
 };
 
@@ -404,6 +405,34 @@ pub fn marshal_nv_undefine_space(
   kv_set(keys::TPM_TAG, TPM_ST_SESSIONS);
 }
 
+pub fn marshal_startup(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_startup_cmd,
+  buffer_space: &mut i32,
+) {
+  let command_body_ref;
+  unsafe {
+    command_body_ref = &*command_body;
+  }
+  kv_set(keys::TPM_TAG, TPM_ST_NO_SESSIONS);
+
+  marshal_TPM_SU(&mut buffer, command_body_ref.startup_type, buffer_space);
+}
+
+pub fn marshal_shutdown(
+  mut buffer: *mut u8,
+  command_body: *mut tpm2_shutdown_cmd,
+  buffer_space: &mut i32,
+) {
+  let command_body_ref;
+  unsafe {
+    command_body_ref = &*command_body;
+  }
+  kv_set(keys::TPM_TAG, TPM_ST_NO_SESSIONS);
+
+  marshal_TPM_SU(&mut buffer, command_body_ref.shutdown_type, buffer_space);
+}
+
 pub fn tpm_marshal_command(
   command: crate::tlcl::tpm20::constants::TPM_CC,
   tpm_command_body: *const core::ffi::c_void,
@@ -451,6 +480,18 @@ pub fn tpm_marshal_command(
     TPM2_NV_ReadPublic => marshal_nv_read_public(
       cmd_body,
       tpm_command_body as *mut tpm2_nv_read_public_cmd,
+      &mut body_size,
+    ),
+
+    TPM2_Startup => marshal_startup(
+      cmd_body,
+      tpm_command_body as *mut tpm2_startup_cmd,
+      &mut body_size,
+    ),
+
+    TPM2_Shutdown => marshal_shutdown(
+      cmd_body,
+      tpm_command_body as *mut tpm2_shutdown_cmd,
       &mut body_size,
     ),
 
