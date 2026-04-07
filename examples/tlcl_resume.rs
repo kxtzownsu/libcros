@@ -1,3 +1,5 @@
+#[cfg(feature = "tpm1_2")]
+use libcros::tlcl::constants::TPM_E_INVALID_POSTINIT;
 #[cfg(feature = "tpm2_0")]
 use libcros::tlcl::tpm20::types::TPM_RC_INITIALIZE;
 use libcros::{kv_get, kv_set, libargs::ArgCheck, tlcl::TlclResume, Logger, LOG, LOG_FATAL};
@@ -27,6 +29,12 @@ fn main() {
   #[cfg(feature = "tpm2_0")]
   if rc == TPM_RC_INITIALIZE {
     LOG!("resume skipped: already initialized (rc={:x})", rc);
+    return;
+  }
+  #[cfg(feature = "tpm1_2")]
+  if rc == TPM_E_INVALID_POSTINIT {
+    /* "(?)" here because i'm pretty sure this is just the same as TPM_RC_INITIALIZE on tpm2, but i'm not 100% sure */
+    LOG!("resume skipped: already initialized(?) (rc={:x})", rc);
     return;
   }
   if rc != 0 {
