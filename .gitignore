@@ -28,3 +28,6 @@ target/
 # We want to prevent any accidental changes to AGENTS.md. This should never be changed.
 # In the event that we do need to change it, we can temporarily remove this line, make the change, and then add it back.
 /AGENTS.md
+
+# This is where most of the code originates from. This is an old project of mine that doesn't have a high chance of releasing anymore.
+reference/kaub
