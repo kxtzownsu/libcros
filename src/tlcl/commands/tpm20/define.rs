@@ -1,16 +1,16 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::{
-  TlclNVReadPublic,
   constants::{TPM_E_BUFFER_SIZE, TPM_SUCCESS},
   tpm20::{
     constants::{
-      HR_NV_INDEX, TPM_ALG_SHA256, TPM2_NV_DefineSpace, TPM2_NV_UndefineSpace, TPMA_NV_AUTHREAD,
-      TPMA_NV_AUTHWRITE, TPMA_NV_MASK_READ, TPMA_NV_MASK_WRITE, TPMA_NV_PLATFORMCREATE,
       nv_read_public_response, tpm2_nv_define_space_cmd, tpm2_nv_undefine_space_cmd,
+      TPM2_NV_DefineSpace, TPM2_NV_UndefineSpace, HR_NV_INDEX, TPMA_NV_AUTHREAD, TPMA_NV_AUTHWRITE,
+      TPMA_NV_MASK_READ, TPMA_NV_MASK_WRITE, TPMA_NV_PLATFORMCREATE, TPM_ALG_SHA256,
     },
     tpm_get_response_code,
   },
+  TlclNVReadPublic,
 };
 
 pub fn TlclGetPermissions(index: u32, permissions: &mut u32) -> u32 {

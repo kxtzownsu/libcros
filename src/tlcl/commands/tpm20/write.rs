@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::tpm20::{
-  constants::{HR_NV_INDEX, TPM2_NV_Write, TPM2B, tpm2_nv_write_cmd},
+  constants::{tpm2_nv_write_cmd, TPM2_NV_Write, HR_NV_INDEX, TPM2B},
   tpm_get_response_code,
 };
 

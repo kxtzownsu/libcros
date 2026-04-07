@@ -7,7 +7,7 @@ use std::{
   time::Duration,
 };
 
-use crate::{LOG_FATAL, keys, kv_get};
+use crate::{keys, kv_get, LOG_FATAL};
 
 pub const TPM_MAX_RETRIES: u32 = 5;
 pub const TPM_RETRY_DELAY_MS: u64 = 100;

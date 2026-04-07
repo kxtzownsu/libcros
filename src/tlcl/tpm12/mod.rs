@@ -3,7 +3,7 @@ pub mod marshal;
 pub mod unmarshal;
 pub mod utils;
 
-use crate::{LOG_DBG, tlcl::vb2ex_tpm_send_recv};
+use crate::{tlcl::vb2ex_tpm_send_recv, LOG_DBG};
 
 pub fn tpm_get_response(
   command: constants::TPM_COMMAND,

@@ -2,8 +2,8 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::tpm12::constants::{
-  TPM_COMMAND, TPM_ORD_NV_ReadValue, TPM_RESP_HEADER_SIZE, TPM_SUCCESS, TPM_TAG_RSP_COMMAND,
-  nv_read_response, tpm1_response,
+  nv_read_response, tpm1_response, TPM_ORD_NV_ReadValue, TPM_COMMAND, TPM_RESP_HEADER_SIZE,
+  TPM_SUCCESS, TPM_TAG_RSP_COMMAND,
 };
 
 pub fn read_be16(src: *const u8) -> u16 {

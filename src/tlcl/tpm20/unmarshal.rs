@@ -2,12 +2,12 @@
 #![allow(non_snake_case)]
 
 use crate::{
-  LOG_DBG,
   tlcl::tpm20::constants::{
-    TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear, TPM2_NV_DefineSpace, TPM2_NV_Read,
-    TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown, TPM2_Startup, TPM2B,
-    TPMS_NV_PUBLIC, nv_read_public_response, nv_read_response, tpm2_response,
+    nv_read_public_response, nv_read_response, tpm2_response, TPM2_Clear, TPM2_NV_DefineSpace,
+    TPM2_NV_Read, TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown,
+    TPM2_Startup, TPM2B, TPMS_NV_PUBLIC, TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS,
   },
+  LOG_DBG,
 };
 
 pub fn unmarshal_u8(buffer: &mut *const u8, buffer_space: &mut i32) -> u8 {

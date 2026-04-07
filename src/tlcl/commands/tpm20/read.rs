@@ -4,8 +4,8 @@ use crate::tlcl::{
   constants::{TPM_E_BADINDEX, TPM_E_READ_EMPTY, TPM_E_RESPONSE_TOO_LARGE, TPM_SUCCESS},
   tpm20::{
     constants::{
-      HR_NV_INDEX, TPM2_NV_Read, TPM2_NV_ReadPublic, nv_read_public_response, tpm2_nv_read_cmd,
-      tpm2_nv_read_public_cmd, tpm2_response,
+      nv_read_public_response, tpm2_nv_read_cmd, tpm2_nv_read_public_cmd, tpm2_response,
+      TPM2_NV_Read, TPM2_NV_ReadPublic, HR_NV_INDEX,
     },
     tpm_send_receive,
   },
