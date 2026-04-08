@@ -32,6 +32,9 @@ pub mod keys {
   #[cfg(feature = "tlcl")]
   #[cfg(feature = "tpm2_0")]
   pub const PH_DISABLED: &str = "ph_disabled";
+
+  #[cfg(feature = "example")]
+  pub const EXAMPLE: &str = "example";
 }
 
 pub mod logging;

@@ -35,6 +35,10 @@ name = "ui"
 required-features = ["example"]
 
 [[example]]
+name = "key_value"
+required-features = ["example"]
+
+[[example]]
 name = "tlcl_clear"
 required-features = ["example", "tlcl"]
 
