@@ -38,6 +38,12 @@ required-features = ["example"]
 name = "key_value"
 required-features = ["example"]
 
+
+[[example]]
+name = "sysinfo"
+required-features = ["example", "tlcl"]
+
+
 [[example]]
 name = "tlcl_clear"
 required-features = ["example", "tlcl"]

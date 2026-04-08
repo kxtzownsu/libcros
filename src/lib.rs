@@ -44,6 +44,7 @@ pub mod libargs;
 pub mod structs;
 pub mod ui;
 pub mod execute;
+pub mod sysinfo;
 
 #[cfg(feature = "tlcl")]
 pub mod tlcl;
