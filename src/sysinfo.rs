@@ -6,7 +6,6 @@ use crate::LOG_DBG;
 /* returns 0xFFFFFFFF on error */
 #[cfg(feature = "tlcl")]
 pub fn kernver() -> u32 {
-  /* index len offset outbuf */
   let mut outbuf: [u8; 4] = unsafe { core::mem::zeroed() };
 
   let rc = TlclReadWithOffset(0x1008, 0x4, 0x5, outbuf.as_mut_ptr() as *mut core::ffi::c_void);
