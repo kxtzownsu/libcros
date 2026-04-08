@@ -97,7 +97,7 @@ jobs:
         echo "tpm dev: $TPM_DEV"
                 
         TPM_PATH="$TPM_DEV" cargo build --example ${{ matrix.example }} \
-          --features tlcl \
+          --features examples tlcl \
           --features ${{ matrix.tpm_version }}
 
         sudo ./target/debug/examples/${{ matrix.example }} --tpm-path "$TPM_DEV" --verbose
