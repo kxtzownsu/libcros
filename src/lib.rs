@@ -39,6 +39,7 @@ pub use logging::Logger;
 
 pub mod libargs;
 pub mod structs;
+pub mod ui;
 
 #[cfg(feature = "tlcl")]
 pub mod tlcl;

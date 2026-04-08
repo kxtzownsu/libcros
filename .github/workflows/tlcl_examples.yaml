@@ -81,7 +81,7 @@ jobs:
 
         echo "tpm dev: $TPM_DEV"
 
-        cargo build --example tlcl_kernver --features tlcl --features ${{ matrix.tpm_version }}
+        cargo build --example tlcl_kernver --features "example tlcl ${{ matrix.tpm_version }}"
         sudo ./target/debug/examples/tlcl_kernver --tpm-path "$TPM_DEV" --verbose
 
     - name: run example

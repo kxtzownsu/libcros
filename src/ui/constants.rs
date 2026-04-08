@@ -1,0 +1,21 @@
+pub const COLOR_RESET: &str = "\x1b[0m";
+pub const COLOR_BLACK_B: &str = "\x1b[1;30m";
+pub const COLOR_RED: &str = "\x1b[0;31m";
+pub const COLOR_RED_B: &str = "\x1b[1;31m";
+pub const COLOR_GREEN: &str = "\x1b[0;32m";
+pub const COLOR_GREEN_B: &str = "\x1b[1;32m";
+pub const COLOR_YELLOW: &str = "\x1b[0;33m";
+pub const COLOR_YELLOW_B: &str = "\x1b[1;33m";
+pub const COLOR_BLUE: &str = "\x1b[0;34m";
+pub const COLOR_BLUE_B: &str = "\x1b[1;34m";
+pub const COLOR_MAGENTA: &str = "\x1b[0;35m";
+pub const COLOR_MAGENTA_B: &str = "\x1b[1;35m";
+pub const COLOR_CYAN: &str = "\x1b[0;36m";
+pub const COLOR_CYAN_B: &str = "\x1b[1;36m";
+pub const COLOR_GREY: &str = "\x1b[0;90m";
+pub const COLOR_GREY_B: &str = "\x1b[1;90m";
+pub const COLOR_GRAY: &str = COLOR_GREY;
+pub const COLOR_GRAY_B: &str = COLOR_GREY_B;
+
+pub const COLOR_UNDERLINE: &str = "\x1b[4m";
+pub const COLOR_ITALIC: &str = "\x1b[3m";

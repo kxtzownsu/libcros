@@ -2,6 +2,7 @@
 name = "libcros"
 version = "0.4.2"
 edition = "2024"
+autoexamples = false
 description = "A Rust library that provides easy-to-use functions for interacting with a Chrome device"
 license = "GPL-3.0-only"
 repository = "https://github.com/kxtzownsu/libcros"
@@ -10,11 +11,65 @@ categories = ["hardware-support", "embedded"]
 authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
 
 [dependencies]
+clearscreen = "4.0.6"
+libc = "0.2.184"
+regex = "1.12.3"
+unicode-width = "0.2.2"
 
 [features]
 tpm2_0 = []
 tpm1_2 = []
 tlcl = []
+example = []
 
 [[example]]
 name = "logger"
+required-features = ["example"]
+
+[[example]]
+name = "libargs"
+required-features = ["example"]
+
+[[example]]
+name = "ui"
+required-features = ["example"]
+
+[[example]]
+name = "tlcl_clear"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_define_and_undefine"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_kernver"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_read"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_read_with_offset"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_resume"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_save_state"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_startup"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_write"
+required-features = ["example", "tlcl"]
+
+[[example]]
+name = "tlcl_write_with_offset"
+required-features = ["example", "tlcl"]
