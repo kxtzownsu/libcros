@@ -1,5 +1,3 @@
-#![allow(non_snake_case)]
-
 use std::process::{Command, ExitStatus, Stdio};
 
 pub fn execute_cmd_stdio(command: &str, live_output: bool) -> String {

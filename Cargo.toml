@@ -15,12 +15,14 @@ clearscreen = "4.0.6"
 libc = "0.2.184"
 regex = "1.12.3"
 unicode-width = "0.2.2"
+flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", subdirectory = "bindings/rust", optional = true }
 
 [features]
 tpm2_0 = []
 tpm1_2 = []
 tlcl = []
 example = []
+flashrom = ["dep:flashrom"]
 
 [[example]]
 name = "logger"
