@@ -1,9 +1,11 @@
+#[cfg(feature = "tlcl")]
 #[derive(Debug)]
 pub struct TPM2B {
   pub size: u16,
   pub buffer: *const u8,
 }
 
+#[cfg(feature = "tlcl")]
 #[derive(Debug)]
 pub struct Tpm2SessionHeader {
   pub session_handle: u32,
@@ -14,6 +16,7 @@ pub struct Tpm2SessionHeader {
   pub auth: u8,
 }
 
+#[cfg(feature = "tlcl")]
 #[derive(Debug)]
 pub struct Tpm2TpmHeader {
   pub tpm_tag: u16,
