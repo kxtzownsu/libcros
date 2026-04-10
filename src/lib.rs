@@ -42,9 +42,21 @@ pub use logging::Logger;
 
 pub mod libargs;
 pub mod structs;
-pub mod ui;
 pub mod execute;
 pub mod sysinfo;
+pub mod crypto;
+
+/*
+Anything that requires a dependency should be locked behind a feature flag.
+*/
+
+#[cfg(feature = "ui")]
+pub mod ui;
+
+/*
+#[cfg(feature = "diskutils")]
+pub mod diskutils;
+*/
 
 #[cfg(feature = "tlcl")]
 pub mod tlcl;

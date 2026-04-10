@@ -11,18 +11,21 @@ categories = ["hardware-support", "embedded"]
 authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
 
 [dependencies]
-clearscreen = "4.0.6"
-libc = "0.2.184"
-regex = "1.12.3"
-unicode-width = "0.2.2"
+clearscreen = { version = "4.0.6", optional = true }
+libc = { version = "0.2.184", optional = true }
+regex = { version = "1.12.3", optional = true }
+unicode-width = { version = "0.2.2", optional = true }
 flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", subdirectory = "bindings/rust", optional = true }
+uuid = { version = "1.23.0", optional = true}
 
 [features]
 tpm2_0 = []
 tpm1_2 = []
 tlcl = []
 example = []
+ui = ["dep:clearscreen", "dep:libc", "dep:regex", "dep:unicode-width"]
 flashrom = ["dep:flashrom"]
+diskutils = ["dep:uuid"]
 
 [[example]]
 name = "logger"
@@ -33,13 +36,16 @@ name = "libargs"
 required-features = ["example"]
 
 [[example]]
-name = "ui"
-required-features = ["example"]
-
-[[example]]
 name = "key_value"
 required-features = ["example"]
 
+[[example]]
+name = "crypto"
+required-features = ["example"]
+
+[[example]]
+name = "ui"
+required-features = ["example", "ui"]
 
 [[example]]
 name = "sysinfo"
