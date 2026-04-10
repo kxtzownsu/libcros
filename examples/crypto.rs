@@ -15,6 +15,7 @@ fn main() {
   /*
   Hello, World!
 
+  expected:
   CRC32: 0xec4ac3d0
   ADLER32: 0x1f9e046a
   SHA1: 0a0a9f2a6772942557ab5355d76af442f8f65e01
