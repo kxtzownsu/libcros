@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -e
+
+if [ -z "${OUT}" ]; then
+  echo "Missing OUT (build output directory) variable" 1>&2
+  exit 1
+fi
+
+SCRIPT_LOCATION="$(dirname "$(readlink -f -- "$0")")"
+# These scripts expect to run in the current directory.
+cd "${SCRIPT_LOCATION}"
+
+export LD_LIBRARY_PATH="${OUT}/lib:${LD_LIBRARY_PATH}"
+
+set -x
+
+./test_basic.sh
+./test_seg_fault.sh
+./test_equal.sh
+./test_multi_add_del.sh
+./test_export.sh
+./test_overflow.sh
+
+set +x
+
+echo "SUCCESS!"
