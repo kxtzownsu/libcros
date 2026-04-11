@@ -18,6 +18,7 @@ struct FlagInfo {
 }
 
 impl ArgCheck {
+  /// Build parser from process args.
   pub fn new() -> Self {
     let args: Vec<String> = env::args().collect();
     let program_name = args
@@ -38,17 +39,20 @@ impl ArgCheck {
     }
   }
 
+  /// Set help description.
   pub fn set_description(&mut self, desc: &str) -> &mut Self {
     self.description = desc.to_string();
     self
   }
 
+  /// Show help and exit when --help or -h is set.
   pub fn check_help(&self) {
     if self.help_requested {
       self.show_help();
     }
   }
 
+  /// Print help text and exit 0.
   pub fn show_help(&self) -> ! {
     println!("Usage: {} [OPTIONS]", self.program_name);
 
@@ -129,14 +133,14 @@ impl ArgCheck {
     }
   }
 
-  /* Returns the value for a matched flag, like `--parameter foobar` or `--parameter=foobar`. With that example, the function would return "foobar" */
+  /// Get flag value.
+  /// Supports --flag value and --flag=value.
   pub fn fequals(&mut self, arg: &str, shorthand: &str, desc: &str) -> Option<String> {
     self.register_flag(arg, shorthand, desc, true);
 
     for i in 0..self.args.len() {
       let item = &self.args[i];
 
-      /* Handle `--parameter=value` and `-s=value` formats properly */
       if item.starts_with(arg) || (!shorthand.is_empty() && item.starts_with(shorthand)) {
         if let Some(index) = item.find('=') {
           if &item[..index] == arg || &item[..index] == shorthand {
@@ -145,7 +149,6 @@ impl ArgCheck {
         }
       }
 
-      /* Handle `--parameter value` format */
       if item == arg || (!shorthand.is_empty() && item == shorthand) {
         return self.args.get(i + 1).cloned();
       }
@@ -153,7 +156,7 @@ impl ArgCheck {
     None
   }
 
-  /* Checks if a flag is present (`--flag` or `-f`) */
+  /// True when the flag is present.
   pub fn fbool(&mut self, arg: &str, shorthand: &str, desc: &str) -> bool {
     self.register_flag(arg, shorthand, desc, false);
 
@@ -163,6 +166,7 @@ impl ArgCheck {
       .any(|item| item == arg || item == shorthand)
   }
 
+  /// Same as fequals, but empty string on miss.
   pub fn fequals_str(&mut self, arg: &str, shorthand: &str, desc: &str) -> String {
     self.fequals(arg, shorthand, desc).unwrap_or_default()
   }

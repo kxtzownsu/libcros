@@ -3,6 +3,7 @@ use unicode_width::UnicodeWidthStr;
 
 use crate::ui::utils::box_draw;
 
+/// Build header text.
 pub fn format_header(splash: &str, additional_text: &str) -> String {
   let re = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
   let max_width = splash
@@ -27,6 +28,7 @@ pub fn format_header(splash: &str, additional_text: &str) -> String {
   text
 }
 
+/// Draw boxed header.
 pub fn ui_header(splash: &str, additional_text: &str) {
   box_draw(format_header(splash, additional_text).trim_end());
 }

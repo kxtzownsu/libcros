@@ -6,6 +6,8 @@ use crate::ui::{
   MenuOption,
 };
 
+/// Arrow-key menu.
+/// Returns None on Ctrl-C or input failure.
 pub fn selection_menu(options: &[MenuOption]) -> Option<usize> {
   if options.is_empty() {
     return None;

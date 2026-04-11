@@ -1,20 +1,25 @@
 static mut VERBOSE: bool = false;
 
+/// Logger state for LOG macros.
 pub struct Logger;
 
 // use_colors isn't implemented at the moment, ignore it.
 impl Logger {
+  /// Set logger state.
+  /// verbose enables LOG_DBG.
   pub fn init(verbose: bool, _use_colors: bool) {
     unsafe {
       VERBOSE = verbose;
     }
   }
 
+  /// True when verbose logging is enabled.
   pub fn verbose_enabled() -> bool {
     unsafe { VERBOSE }
   }
 }
 
+/// Info log.
 #[macro_export]
 macro_rules! LOG {
   ($($arg:tt)*) => {
@@ -27,6 +32,7 @@ macro_rules! LOG {
   };
 }
 
+/// Debug log when verbose is enabled.
 #[macro_export]
 macro_rules! LOG_DBG {
   ($($arg:tt)*) => {
@@ -41,6 +47,7 @@ macro_rules! LOG_DBG {
   };
 }
 
+/// Fatal log and exit.
 #[macro_export]
 macro_rules! LOG_FATAL {
   // LOG_FATAL!(67; "error"), would exit with rc 67
@@ -65,6 +72,7 @@ macro_rules! LOG_FATAL {
   }};
 }
 
+/// Fatal log without exit.
 #[macro_export]
 macro_rules! LOG_FATAL_NOEXIT {
   // LOG_FATAL_NOEXIT!(42; "error"), sicne we dont exit, the rc is ignored.

@@ -5,6 +5,7 @@ use std::io::{self, Write};
 use libc::{tcgetattr, tcsetattr, termios, ECHO, ICANON, STDIN_FILENO, TCSANOW};
 use regex::Regex;
 
+/// Draw centered text in a box.
 pub fn box_draw(text: &str) {
   let margin = 5;
   let re = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
@@ -36,6 +37,7 @@ pub fn box_draw(text: &str) {
   println!("└{}┘", "─".repeat(max_len));
 }
 
+/// Read one line from stdin.
 pub fn input(prompt: &str) -> String {
   print!("{}", prompt);
   io::stdout().flush().unwrap();
@@ -47,11 +49,13 @@ pub fn input(prompt: &str) -> String {
   buffer.trim().to_string()
 }
 
+/// Print continue prompt and wait for Enter.
 pub fn enter_to_continue() {
   println!("Press ENTER to continue!");
   input("");
 }
 
+/// Enable terminal raw mode.
 pub fn enable_raw_mode() -> libc::termios {
   unsafe {
     let mut termios: termios = std::mem::zeroed();
@@ -65,6 +69,7 @@ pub fn enable_raw_mode() -> libc::termios {
   }
 }
 
+/// Restore terminal settings.
 pub fn disable_raw_mode(original: libc::termios) {
   unsafe {
     tcsetattr(STDIN_FILENO, TCSANOW, &original);

@@ -1,5 +1,7 @@
 use std::process::{Command, ExitStatus, Stdio};
 
+/// Run a shell command.
+/// Returns output text or error text.
 pub fn execute_cmd_stdio(command: &str, live_output: bool) -> String {
   if live_output {
     let status = Command::new("bash")
@@ -29,6 +31,8 @@ pub fn execute_cmd_stdio(command: &str, live_output: bool) -> String {
   }
 }
 
+/// Run a shell command and return exit code.
+/// Returns -1 on failure.
 pub fn execute_cmd_rc(command: &str, live_output: bool) -> i32 {
   if live_output {
     match Command::new("bash")
@@ -50,7 +54,7 @@ pub fn execute_cmd_rc(command: &str, live_output: bool) -> i32 {
   }
 }
 
-/* spawn bash shell function because rust :broken_heart: */
+/// Spawn /bin/bash and wait for exit.
 pub fn spawn_bash_shell() -> ExitStatus {
   let err = Command::new("/bin/bash")
     .spawn()
