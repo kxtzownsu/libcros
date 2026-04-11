@@ -26,7 +26,7 @@ pub struct Tpm2TpmHeader {
 
 #[cfg(feature = "diskutils")]
 #[repr(C, packed)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct GPTPartitionEntry {
   pub partition_type_guid: [u8; 16],
   pub unique_partition_guid: [u8; 16],
@@ -39,7 +39,7 @@ pub struct GPTPartitionEntry {
 #[cfg(feature = "diskutils")]
 // lol thanks wikipedia
 #[repr(C, packed)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct GPTHeader {
   pub magic: [u8; 8],
   pub revision: u32,
@@ -55,4 +55,17 @@ pub struct GPTHeader {
   pub num_partition_entries: u32,
   pub size_partition_entry: u32,
   pub partition_entry_array_crc32: u32,
+}
+
+pub fn write_struct<T>(value: &T, out: &mut [u8]) {
+  let size = core::mem::size_of::<T>();
+  let bytes = size.min(out.len());
+
+  unsafe {
+    core::ptr::copy_nonoverlapping(value as *const T as *const u8, out.as_mut_ptr(), bytes);
+  }
+}
+
+pub fn read_struct<T: Copy>(input: &[u8]) -> T {
+  unsafe { core::ptr::read_unaligned(input.as_ptr() as *const T) }
 }
