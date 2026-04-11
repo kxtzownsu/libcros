@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::{
+  commands::tpm20::TlclNVReadPublic,
   constants::{TPM_E_BUFFER_SIZE, TPM_SUCCESS},
   tpm20::{
     constants::{
@@ -10,7 +11,6 @@ use crate::tlcl::{
     },
     tpm_get_response_code,
   },
-  TlclNVReadPublic,
 };
 
 pub fn TlclGetPermissions(index: u32, permissions: &mut u32) -> u32 {

@@ -1,5 +1,9 @@
-#[cfg(feature = "tlcl")]
-use crate::tlcl::TlclReadWithOffset;
+#[cfg(all(not(feature = "tpm1_2"), not(feature = "tpm2_0"), feature = "tlcl"))]
+use crate::tlcl::commands::stubs::TlclReadWithOffset;
+#[cfg(all(feature = "tlcl", feature = "tpm1_2", not(feature = "tpm2_0")))]
+use crate::tlcl::commands::tpm12::TlclReadWithOffset;
+#[cfg(all(feature = "tlcl", feature = "tpm2_0"))]
+use crate::tlcl::commands::tpm20::TlclReadWithOffset;
 use crate::LOG_DBG;
 
 /// Read active kernel version from TPM NV.

@@ -127,7 +127,19 @@ pub mod tpm12;
 #[cfg(feature = "tpm2_0")]
 pub mod tpm20;
 
+#[cfg(feature = "tpm1_2")]
+pub mod v1_2;
+
+#[cfg(feature = "tpm2_0")]
+pub mod v2_0;
+
+#[cfg(all(not(feature = "tpm1_2"), not(feature = "tpm2_0")))]
+pub mod stubs;
+
+#[allow(unused_imports)]
 pub use commands::*;
+#[cfg(any(feature = "tpm1_2", feature = "tpm2_0"))]
+#[allow(unused_imports)]
 pub use permissions::*;
 
 // const TPM_MAX_RETRIES: u32 = 5;
