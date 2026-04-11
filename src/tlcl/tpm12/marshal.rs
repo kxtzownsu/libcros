@@ -1,29 +1,16 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_snake_case)]
 
-use crate::tlcl::tpm12::constants::{
-  tpm1_nv_define_space_cmd, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
-  tpm1_startup_cmd, tpm_header, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace, TPM_ORD_NV_ReadValue,
-  TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_ORD_SaveState, TPM_ORD_Startup,
-  TSC_ORD_PhysicalPresence, TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND,
-  TPM_TAG_NV_ATTRIBUTES, TPM_TAG_NV_DATA_PUBLIC, TPM_TAG_RQU_COMMAND,
+use crate::tlcl::{
+  bytes::{write_be16, write_be32},
+  tpm12::constants::{
+    tpm1_nv_define_space_cmd, tpm1_nv_read_cmd, tpm1_nv_write_cmd, tpm1_physical_presence_cmd,
+    tpm1_startup_cmd, tpm_header, TPM_ORD_ForceClear, TPM_ORD_NV_DefineSpace, TPM_ORD_NV_ReadValue,
+    TPM_ORD_NV_WriteValue, TPM_ORD_PhysicalEnable, TPM_ORD_SaveState, TPM_ORD_Startup,
+    TSC_ORD_PhysicalPresence, TPM_BUFFER_SIZE, TPM_CMD_HEADER_SIZE, TPM_COMMAND,
+    TPM_TAG_NV_ATTRIBUTES, TPM_TAG_NV_DATA_PUBLIC, TPM_TAG_RQU_COMMAND,
+  },
 };
-
-pub fn write_be16(dest: *mut u8, val: u16) {
-  unsafe {
-    *dest.add(0) = (val >> 8) as u8;
-    *dest.add(1) = val as u8;
-  }
-}
-
-pub fn write_be32(dest: *mut u8, val: u32) {
-  unsafe {
-    *dest.add(0) = (val >> 24) as u8;
-    *dest.add(1) = (val >> 16) as u8;
-    *dest.add(2) = (val >> 8) as u8;
-    *dest.add(3) = val as u8;
-  }
-}
 
 pub fn marshal_u16(buffer: &mut *mut u8, value: u16, buffer_space: &mut i32) {
   if *buffer_space < core::mem::size_of::<u16>() as i32 {

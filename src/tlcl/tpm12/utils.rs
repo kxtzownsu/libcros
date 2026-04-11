@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 
+pub use crate::tlcl::bytes::{read_be16, read_be32, write_be16, write_be32};
 use crate::tlcl::tpm12::constants::{
   TPM_ALL_LOCALITIES, TPM_DIGEST, TPM_LOC_THREE, TPM_NV_AUTH_POLICY, TPM_PCR_INFO_SHORT,
   TPM_PCR_SELECTION,
@@ -9,35 +10,6 @@ const EMPTY_PCR_SELECTION_SHA1: [u8; 20] = [
   0x79, 0xdd, 0xda, 0xfd, 0xc1, 0x97, 0xdc, 0xcc, 0xe9, 0x98, 0x9a, 0xee, 0xf5, 0x52, 0x89, 0xee,
   0x24, 0x96, 0x4c, 0xac,
 ];
-
-pub fn read_be16(src: *const u8) -> u16 {
-  unsafe { ((*src.add(0) as u16) << 8) | ((*src.add(1) as u16) << 0) }
-}
-
-pub fn read_be32(src: *const u8) -> u32 {
-  unsafe {
-    ((*src.add(0) as u32) << 24)
-      | ((*src.add(1) as u32) << 16)
-      | ((*src.add(2) as u32) << 8)
-      | ((*src.add(3) as u32) << 0)
-  }
-}
-
-pub fn write_be16(dest: *mut u8, val: u16) {
-  unsafe {
-    *dest.add(0) = (val >> 8) as u8;
-    *dest.add(1) = val as u8;
-  }
-}
-
-pub fn write_be32(dest: *mut u8, val: u32) {
-  unsafe {
-    *dest.add(0) = (val >> 24) as u8;
-    *dest.add(1) = (val >> 16) as u8;
-    *dest.add(2) = (val >> 8) as u8;
-    *dest.add(3) = val as u8;
-  }
-}
 
 pub fn decode_pcr_info(
   response: &[u8],

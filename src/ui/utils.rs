@@ -1,14 +1,22 @@
 #![allow(dead_code)]
 
-use std::io::{self, Write};
+use std::{
+  io::{self, Write},
+  sync::OnceLock,
+};
 
 use libc::{tcgetattr, tcsetattr, termios, ECHO, ICANON, STDIN_FILENO, TCSANOW};
 use regex::Regex;
 
+pub fn ansi_escape_regex() -> &'static Regex {
+  static ANSI_ESCAPE_REGEX: OnceLock<Regex> = OnceLock::new();
+  ANSI_ESCAPE_REGEX.get_or_init(|| Regex::new(r"\x1b\[[0-9;]*m").unwrap())
+}
+
 /// Draw centered text in a box.
 pub fn box_draw(text: &str) {
   let margin = 5;
-  let re = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
+  let re = ansi_escape_regex();
   let lines: Vec<&str> = text.split('\n').collect();
 
   let mut max_len = 0;

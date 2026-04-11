@@ -1,23 +1,13 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_snake_case)]
 
-use crate::tlcl::tpm12::constants::{
-  nv_read_response, tpm1_response, TPM_ORD_NV_ReadValue, TPM_COMMAND, TPM_RESP_HEADER_SIZE,
-  TPM_SUCCESS, TPM_TAG_RSP_COMMAND,
+use crate::tlcl::{
+  bytes::{read_be16, read_be32},
+  tpm12::constants::{
+    nv_read_response, tpm1_response, TPM_ORD_NV_ReadValue, TPM_COMMAND, TPM_RESP_HEADER_SIZE,
+    TPM_SUCCESS, TPM_TAG_RSP_COMMAND,
+  },
 };
-
-pub fn read_be16(src: *const u8) -> u16 {
-  unsafe { ((*src.add(0) as u16) << 8) | ((*src.add(1) as u16) << 0) }
-}
-
-pub fn read_be32(src: *const u8) -> u32 {
-  unsafe {
-    ((*src.add(0) as u32) << 24)
-      | ((*src.add(1) as u32) << 16)
-      | ((*src.add(2) as u32) << 8)
-      | ((*src.add(3) as u32) << 0)
-  }
-}
 
 pub fn unmarshal_u16(buffer: &mut *const u8, buffer_space: &mut i32) -> u16 {
   let value: u16;

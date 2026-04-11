@@ -67,5 +67,6 @@ pub fn write_struct<T>(value: &T, out: &mut [u8]) {
 }
 
 pub fn read_struct<T: Copy>(input: &[u8]) -> T {
+  assert!(input.len() >= core::mem::size_of::<T>());
   unsafe { core::ptr::read_unaligned(input.as_ptr() as *const T) }
 }

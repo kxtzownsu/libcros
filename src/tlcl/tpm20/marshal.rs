@@ -4,31 +4,18 @@
 
 use crate::{
   keys, kv_get, kv_get_bool, kv_set,
-  tlcl::tpm20::constants::{
-    tpm2_nv_define_space_cmd, tpm2_nv_read_cmd, tpm2_nv_read_public_cmd,
-    tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header, tpm2_shutdown_cmd,
-    tpm2_startup_cmd, tpm_header, TPM2_Clear, TPM2_NV_DefineSpace, TPM2_NV_Read,
-    TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown, TPM2_Startup, TPM2B,
-    TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START, TPMS_NV_PUBLIC, TPM_RH_OWNER,
-    TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS,
+  tlcl::{
+    bytes::{write_be16, write_be32},
+    tpm20::constants::{
+      tpm2_nv_define_space_cmd, tpm2_nv_read_cmd, tpm2_nv_read_public_cmd,
+      tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header, tpm2_shutdown_cmd,
+      tpm2_startup_cmd, tpm_header, TPM2_Clear, TPM2_NV_DefineSpace, TPM2_NV_Read,
+      TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown, TPM2_Startup, TPM2B,
+      TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START, TPMS_NV_PUBLIC, TPM_RH_OWNER,
+      TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS,
+    },
   },
 };
-
-pub fn write_be16(dest: *mut u8, val: u16) {
-  unsafe {
-    *dest.add(0) = (val >> 8) as u8;
-    *dest.add(1) = val as u8;
-  }
-}
-
-pub fn write_be32(dest: *mut u8, val: u32) {
-  unsafe {
-    *dest.add(0) = (val >> 24) as u8;
-    *dest.add(1) = (val >> 16) as u8;
-    *dest.add(2) = (val >> 8) as u8;
-    *dest.add(3) = val as u8;
-  }
-}
 
 pub fn marshal_blob(
   buffer: &mut *mut u8,

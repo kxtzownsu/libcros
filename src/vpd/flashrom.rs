@@ -1,3 +1,3 @@
-#![allow[non_snake_case]]
+#![allow(non_snake_case)]
 
-pub fn FlashromRead(){}
+pub fn FlashromRead() {}

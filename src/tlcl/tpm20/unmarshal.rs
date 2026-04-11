@@ -2,10 +2,13 @@
 #![allow(non_snake_case)]
 
 use crate::{
-  tlcl::tpm20::constants::{
-    nv_read_public_response, nv_read_response, tpm2_response, TPM2_Clear, TPM2_NV_DefineSpace,
-    TPM2_NV_Read, TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown,
-    TPM2_Startup, TPM2B, TPMS_NV_PUBLIC, TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS,
+  tlcl::{
+    bytes::{read_be16, read_be32},
+    tpm20::constants::{
+      nv_read_public_response, nv_read_response, tpm2_response, TPM2_Clear, TPM2_NV_DefineSpace,
+      TPM2_NV_Read, TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown,
+      TPM2_Startup, TPM2B, TPMS_NV_PUBLIC, TPM_CC, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS,
+    },
   },
   LOG_DBG,
 };
@@ -25,19 +28,6 @@ pub fn unmarshal_u8(buffer: &mut *const u8, buffer_space: &mut i32) -> u8 {
   *buffer_space -= core::mem::size_of::<u8>() as i32;
 
   value
-}
-
-pub fn read_be16(src: *const u8) -> u16 {
-  unsafe { ((*src.add(0) as u16) << 8) | ((*src.add(1) as u16) << 0) }
-}
-
-pub fn read_be32(src: *const u8) -> u32 {
-  unsafe {
-    ((*src.add(0) as u32) << 24)
-      | ((*src.add(1) as u32) << 16)
-      | ((*src.add(2) as u32) << 8)
-      | ((*src.add(3) as u32) << 0)
-  }
 }
 
 pub fn unmarshal_u16(buffer: &mut *const u8, buffer_space: &mut i32) -> u16 {

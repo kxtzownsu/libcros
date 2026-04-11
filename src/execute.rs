@@ -1,16 +1,24 @@
 use std::process::{Command, ExitStatus, Stdio};
 
+fn bash_command(command: &str, live_output: bool) -> Command {
+  let mut cmd = Command::new("bash");
+  cmd.arg("-c").arg(command);
+
+  if live_output {
+    cmd
+      .stdin(Stdio::inherit())
+      .stdout(Stdio::inherit())
+      .stderr(Stdio::inherit());
+  }
+
+  cmd
+}
+
 /// Run a shell command.
 /// Returns output text or error text.
 pub fn execute_cmd_stdio(command: &str, live_output: bool) -> String {
   if live_output {
-    let status = Command::new("bash")
-      .arg("-c")
-      .arg(command)
-      .stdin(Stdio::inherit())
-      .stdout(Stdio::inherit())
-      .stderr(Stdio::inherit())
-      .status();
+    let status = bash_command(command, true).status();
 
     match status {
       Ok(s) if s.success() => "".to_string(),
@@ -18,7 +26,7 @@ pub fn execute_cmd_stdio(command: &str, live_output: bool) -> String {
       Err(e) => format!("error executing command: {}", e),
     }
   } else {
-    match Command::new("bash").arg("-c").arg(command).output() {
+    match bash_command(command, false).output() {
       Ok(output) => {
         if output.status.success() {
           String::from_utf8_lossy(&output.stdout).to_string()
@@ -35,19 +43,12 @@ pub fn execute_cmd_stdio(command: &str, live_output: bool) -> String {
 /// Returns -1 on failure.
 pub fn execute_cmd_rc(command: &str, live_output: bool) -> i32 {
   if live_output {
-    match Command::new("bash")
-      .arg("-c")
-      .arg(command)
-      .stdin(Stdio::inherit())
-      .stdout(Stdio::inherit())
-      .stderr(Stdio::inherit())
-      .status()
-    {
+    match bash_command(command, true).status() {
       Ok(s) => s.code().unwrap_or(-1),
       Err(_) => -1,
     }
   } else {
-    match Command::new("bash").arg("-c").arg(command).output() {
+    match bash_command(command, false).output() {
       Ok(output) => output.status.code().unwrap_or(-1),
       Err(_) => -1,
     }

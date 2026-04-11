@@ -1,11 +1,10 @@
-use regex::Regex;
 use unicode_width::UnicodeWidthStr;
 
-use crate::ui::utils::box_draw;
+use crate::ui::utils::{ansi_escape_regex, box_draw};
 
 /// Build header text.
 pub fn format_header(splash: &str, additional_text: &str) -> String {
-  let re = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
+  let re = ansi_escape_regex();
   let max_width = splash
     .split('\n')
     .map(|line| UnicodeWidthStr::width(re.replace_all(line, "").as_ref()))
