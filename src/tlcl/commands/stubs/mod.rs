@@ -21,16 +21,23 @@ pub fn TlclUndefineSpaceEx(_owner_auth: *const u8, _owner_auth_size: u32, _index
 }
 
 pub fn TlclDefineSpaceEx(
+  _owner_auth: *const u8,
+  _owner_auth_size: u32,
   _index: u32,
   _perm: u32,
   _size: u32,
-  _nv_policy: *const u8,
-  _nv_policy_size: u32,
+  _auth_policy: *const core::ffi::c_void,
+  _auth_policy_size: u32,
 ) -> u32 {
   no_such_command()
 }
 
-pub fn TlclInitNvAuthPolicy(_policy: *const u8, _policy_size: u32) -> u32 {
+pub fn TlclInitNvAuthPolicy(
+  _pcr_selection_bitmap: u32,
+  _pcr_values: *const u8,
+  _auth_policy: *mut core::ffi::c_void,
+  _auth_policy_size: &mut u32,
+) -> u32 {
   no_such_command()
 }
 
@@ -38,7 +45,7 @@ pub fn TlclGetSpaceInfo(
   _index: u32,
   _attributes: &mut u32,
   _size: &mut u32,
-  _auth_policy: *mut u8,
+  _auth_policy: *mut core::ffi::c_void,
   _auth_policy_size: &mut u32,
 ) -> u32 {
   no_such_command()

@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 #[cfg(feature = "tpm1_2")]
 use libcros::tlcl::tpm12::constants::{TPM_NV_PER_PPREAD, TPM_NV_PER_PPWRITE};
 use libcros::{

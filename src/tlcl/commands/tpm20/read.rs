@@ -62,7 +62,7 @@ pub fn TlclReadWithOffset(
   TPM_SUCCESS
 }
 
-pub fn TlclNVReadPublic(index: u32, presp: *mut nv_read_public_response) -> u32 {
+pub fn TlclNVReadPublic(index: u32, presp: *mut core::ffi::c_void) -> u32 {
   let mut response: tpm2_response = unsafe { core::mem::zeroed() };
   let mut read_pub: tpm2_nv_read_public_cmd = unsafe { core::mem::zeroed() };
   let rv: u32;
@@ -79,7 +79,7 @@ pub fn TlclNVReadPublic(index: u32, presp: *mut nv_read_public_response) -> u32 
       core::ptr::copy_nonoverlapping(
         &response.body.nv_read_public as *const core::mem::ManuallyDrop<nv_read_public_response>
           as *const nv_read_public_response,
-        presp,
+        presp as *mut nv_read_public_response,
         1,
       );
     }

@@ -15,7 +15,7 @@ use crate::tlcl::{
 
 pub fn TlclGetPermissions(index: u32, permissions: &mut u32) -> u32 {
   let mut pub_resp: nv_read_public_response = unsafe { core::mem::zeroed() };
-  let rv = TlclNVReadPublic(index, &mut pub_resp);
+  let rv = TlclNVReadPublic(index, &mut pub_resp as *mut _ as *mut core::ffi::c_void);
   if rv != TPM_SUCCESS {
     return rv;
   }
@@ -117,7 +117,7 @@ pub fn TlclGetSpaceInfo(
   auth_policy_size: &mut u32,
 ) -> u32 {
   let mut resp: nv_read_public_response = unsafe { core::mem::zeroed() };
-  let rv = TlclNVReadPublic(index, &mut resp);
+  let rv = TlclNVReadPublic(index, &mut resp as *mut _ as *mut core::ffi::c_void);
   if rv != TPM_SUCCESS {
     return rv;
   }
