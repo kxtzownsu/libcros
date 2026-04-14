@@ -64,20 +64,24 @@ pub mod libargs;
 /// Commonly-used structs
 pub mod structs;
 
-/// High-level functions to get misc things from a Chrome device
+/// High-level functions to get information about a Chrome device
 pub mod sysinfo;
 
 /*
 Anything that requires a dependency should be locked behind a feature flag.
 */
 
+/// Basic drawing functions for TUIs
 #[cfg(feature = "ui")]
 pub mod ui;
+
+/// A lightweight TPM2 library. Based on vboot's Tlcl library.
+#[cfg(feature = "tlcl")]
+pub mod tlcl;
 
 /*
 #[cfg(feature = "diskutils")]
 pub mod diskutils;
-*/
 
-#[cfg(feature = "tlcl")]
-pub mod tlcl;
+pub mod vpd;
+*/
