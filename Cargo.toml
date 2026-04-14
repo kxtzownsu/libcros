@@ -10,6 +10,9 @@ keywords = ["chrome", "chromeos", "google", "chromium", "chromiumos"]
 categories = ["hardware-support", "embedded"]
 authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dependencies]
 clearscreen = { version = "4.0.6", optional = true }
 libc = { version = "0.2.184", optional = true }
@@ -26,6 +29,10 @@ example = []
 ui = ["dep:clearscreen", "dep:libc", "dep:regex", "dep:unicode-width"]
 # flashrom = ["dep:flashrom"]
 diskutils = ["dep:uuid"]
+
+# Below here is all of our examples.
+# There is a lot and it could get messy quick,
+# so keep it down here at the bottom.
 
 [[example]]
 name = "logger"

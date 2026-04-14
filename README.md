@@ -17,7 +17,10 @@ First, you need to install the package to your project. See [Installation](#Inst
 Then, look at some examples in [examples/](examples/). There are examples on how to use the following features:
 - Logging
 - Tlcl (TPM1.2 & TPM2.0)
-
+- Key=Value
+- Cryptography
+- Argument Parsing
+- UI Rendering
 
 ## Credits
 - [appleflyer](https://github.com/appleflyerv3) - intial Tlcl rust port. wouldn't have been able to start w/out them
