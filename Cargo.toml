@@ -1,6 +1,6 @@
 [package]
 name = "libcros"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2024"
 autoexamples = false
 description = "A Rust library that provides easy-to-use functions for interacting with a Chrome device"
@@ -15,7 +15,7 @@ clearscreen = { version = "4.0.6", optional = true }
 libc = { version = "0.2.184", optional = true }
 regex = { version = "1.12.3", optional = true }
 unicode-width = { version = "0.2.2", optional = true }
-flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", package = "flashrom", optional = true }
+# flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", package = "flashrom", optional = true }
 uuid = { version = "1.23.0", optional = true}
 
 [features]
@@ -24,7 +24,7 @@ tpm1_2 = []
 tlcl = []
 example = []
 ui = ["dep:clearscreen", "dep:libc", "dep:regex", "dep:unicode-width"]
-flashrom = ["dep:flashrom"]
+# flashrom = ["dep:flashrom"]
 diskutils = ["dep:uuid"]
 
 [[example]]
