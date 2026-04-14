@@ -28,14 +28,15 @@ pub fn kv_get_bool(key: &'static str) -> bool {
 
 /// Common keys for the global key/value store.
 pub mod keys {
-  /// TPM device path.
-  pub const TPM_PATH: &str = "tpm_path";
   /// Internal disk path.
   pub const INTERNAL_DISK: &str = "internal_disk";
 
   #[cfg(feature = "tlcl")]
+  /// TPM device path.
+  pub const TPM_PATH: &str = "tpm_path";
+
+  #[cfg(feature = "tlcl")]
   #[cfg(feature = "tpm2_0")]
-  /// Cached TPM2 tag.
   pub const TPM_TAG: &str = "tpm_tag";
 
   #[cfg(feature = "tlcl")]
@@ -47,13 +48,23 @@ pub mod keys {
   pub const EXAMPLE: &str = "example";
 }
 
+/// Easy-to-use logging API
 pub mod logging;
 pub use logging::Logger;
 
+/// Basic cryptography functions
 pub mod crypto;
+
+/// Easy-to-use functions to execute commands
 pub mod execute;
+
+/// Lightweight argument parser
 pub mod libargs;
+
+/// Commonly-used structs
 pub mod structs;
+
+/// High-level functions to get misc things from a Chrome device
 pub mod sysinfo;
 
 /*
