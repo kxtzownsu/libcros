@@ -150,14 +150,19 @@ pub use exports::*;
 #[allow(unused_imports)]
 pub use permissions::*;
 
-#[cfg(feature = "tpm1_2")]
+#[cfg(all(feature = "tpm2_0", feature = "tpm1_2"))]
 pub fn TlclGetTPMVersion() -> String {
-  "1.2".to_string()
+    "2.0".to_string()
 }
 
-#[cfg(feature = "tpm2_0")]
+#[cfg(all(feature = "tpm2_0", not(feature = "tpm1_2")))]
 pub fn TlclGetTPMVersion() -> String {
-  "2.0".to_string()
+    "2.0".to_string()
+}
+
+#[cfg(all(feature = "tpm1_2", not(feature = "tpm2_0")))]
+pub fn TlclGetTPMVersion() -> String {
+    "1.2".to_string()
 }
 
 #[cfg(not(any(feature = "tpm1_2", feature = "tpm2_0")))]
