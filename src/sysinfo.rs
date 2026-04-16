@@ -1,7 +1,7 @@
 #![allow(unused_assignments)] // for kernver::bytes & fwver::bytes
 
 #[cfg(feature = "tlcl")]
-use crate::tlcl::exports::TlclRead;
+use crate::tlcl::TlclRead;
 use crate::LOG_DBG;
 
 /// Fetch the active kernel rollback version from the TPM.
