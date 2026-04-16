@@ -48,6 +48,15 @@ where
     return crate::tlcl::constants::TPM_E_READ_FAILURE;
   }
 
+  if code_fn(response) != crate::tlcl::constants::TPM_SUCCESS {
+    LOG_DBG!(
+      "command 0x{:X} failed! tpm returned 0x{:X}",
+      command,
+      code_fn(response)
+    );
+    return code_fn(response);
+  }
+
   LOG_DBG!(
     "command 0x{:X}, return code 0x{:X}",
     command,
