@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 mod backend;
 pub mod bytes;
 mod client;
@@ -147,3 +149,18 @@ pub use exports::*;
 #[cfg(any(feature = "tpm1_2", feature = "tpm2_0"))]
 #[allow(unused_imports)]
 pub use permissions::*;
+
+#[cfg(feature = "tpm1_2")]
+pub fn TlclGetTPMVersion() -> String {
+  "1.2".to_string()
+}
+
+#[cfg(feature = "tpm2_0")]
+pub fn TlclGetTPMVersion() -> String {
+  "2.0".to_string()
+}
+
+#[cfg(not(any(feature = "tpm1_2", feature = "tpm2_0")))]
+pub fn TlclGetTPMVersion() -> String {
+  "No TPM version was specified when compiling libcros.".to_string()
+}
