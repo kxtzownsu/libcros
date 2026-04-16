@@ -7,6 +7,8 @@ use crate::tlcl::{TlclRead, TlclGetTPMVersion};
 const KERNEL_ROLLBACK_NV_INDEX: u32 = 0x1008;
 #[cfg(feature = "tlcl")]
 const FIRMWARE_ROLLBACK_NV_INDEX: u32 = 0x1007;
+#[cfg(feature = "tlcl")]
+const FIRMWARE_MANAGEMENT_PARAMETERS_NV_INDEX: u32 = 0x100A;
 
 /// Macro to reduce boilerplate for TPM NV read operations.
 #[cfg(feature = "tlcl")]
@@ -88,6 +90,15 @@ pub fn get_firmware_rollback_version() -> u32 {
   })
 }
 
+/// Fetch the firmware management parameters from the TPM.
+/// Returns u32::MAX (0xFFFFFFFF) on error.
+#[cfg(feature = "tlcl")]
+pub fn get_firmware_management_parameters() -> u32 {
+  tpm_nv_read!(FIRMWARE_MANAGEMENT_PARAMETERS_NV_INDEX, 0x8, |buf: &[u8]| {
+    u32::from_le_bytes(buf[0x4..0x8].try_into().unwrap())
+  })
+}
+
 #[cfg(feature = "tlcl")]
 pub fn get_tpm_version() -> String {
   TlclGetTPMVersion()
@@ -111,6 +122,16 @@ pub fn get_kernel_rollback_version() -> u32 {
 /// TPM without the Tlcl library, we just stub it here and return u32::MAX 
 // (0xFFFFFFFF)
 pub fn get_firmware_rollback_version() -> u32 {
+  LOG_DBG!("tlcl feature not enabled");
+  u32::MAX
+}
+
+#[cfg(not(feature = "tlcl"))]
+/// This is a stub for whenever Tlcl isn't enabled. Due to the fact that
+/// the firmware management parameters is in the TPM but we can't fetch from the
+/// TPM without the Tlcl library, we just stub it here and return u32::MAX 
+// (0xFFFFFFFF)
+pub fn get_firmware_management_parameters() -> u32 {
   LOG_DBG!("tlcl feature not enabled");
   u32::MAX
 }

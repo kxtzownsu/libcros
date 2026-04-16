@@ -1,4 +1,4 @@
-use libcros::sysinfo::{get_kernel_rollback_version, get_firmware_rollback_version, get_tpm_version};
+use libcros::sysinfo::{get_kernel_rollback_version, get_firmware_rollback_version, get_tpm_version, get_firmware_management_parameters};
 use libcros::libargs::ArgCheck;
 use libcros::{LOG, Logger, kv_set, kv_get};
 
@@ -30,6 +30,9 @@ fn main() {
 
   let fwver: u32 = get_firmware_rollback_version();
   LOG!("Firmware rollback version: 0x{:08x}", fwver);
+
+  let fwmp: u32 = get_firmware_management_parameters();
+  LOG!("FWMP: 0x{:08x}", fwmp);
 
   /*
   TODO: we need the following:
