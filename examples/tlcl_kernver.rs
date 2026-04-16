@@ -53,7 +53,7 @@ fn main() {
   }
 
   /* tpm2_nvdefine --hierarchy=p --size=13 0x1008
-  platform hierarchy = PLATFORMCREATE on tpm2.0, PPWRITE|PPREAD on tpm1.2 */
+  PPWRITE|PPREAD on tpm 1.2, those two plus PLATFORMCREATE on tpm 2.0 */
   #[cfg(feature = "tpm2_0")]
   let perm = libcros::tlcl::tpm20::constants::TPMA_NV_PLATFORMCREATE
     | libcros::tlcl::tpm20::constants::TPMA_NV_PPWRITE

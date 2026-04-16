@@ -1,4 +1,4 @@
-use libcros::sysinfo::kernver;
+use libcros::sysinfo::{kernver, fwver};
 use libcros::libargs::ArgCheck;
 use libcros::{LOG, Logger, kv_set, kv_get};
 
@@ -22,8 +22,11 @@ fn main() {
   Logger::init(verbose, true);
   kv_get(libcros::keys::TPM_PATH);
 
-  let kernver = kernver();
-  LOG!("Kernel version: 0x{:08x}", kernver);
+  let kernver: u32 = kernver();
+  LOG!("Kernel rollback version: 0x{:08x}", kernver);
+
+  let fwver: u32 = fwver();
+  LOG!("Firmware rollback version: 0x{:08x}", fwver);
 
   /*
   TODO: we need the following:
