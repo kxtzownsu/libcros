@@ -10,6 +10,7 @@ fn main() {
     "-t",
     "Specify a custom TPM device to use in /dev/tpmX format",
   );
+  let ph_disabled: bool = args.fbool("--disable-platform-hierarchy", "-p", "disable platform hierarchy");
 
   args.check_help();
 
@@ -17,6 +18,12 @@ fn main() {
     kv_set(libcros::keys::TPM_PATH, "/dev/tpm0");
   } else {
     kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
+  }
+
+  if ph_disabled {
+    kv_set(libcros::keys::PH_DISABLED, true);
+  } else {
+    kv_set(libcros::keys::PH_DISABLED, false);
   }
 
   Logger::init(verbose, true);
@@ -32,8 +39,12 @@ fn main() {
   LOG!("Firmware rollback version: 0x{:08x}", fwver);
 
   let fwmp: u32 = get_firmware_management_parameters();
-  LOG!("FWMP: 0x{:08x}", fwmp);
-
+  if fwmp == u32::MAX {
+    LOG!("FWMP index doesn't exist!")
+  } else {
+    LOG!("FWMP: 0x{:08x}", fwmp);
+  }
+  
   /*
   TODO: we need the following:
   - emmc
