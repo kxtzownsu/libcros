@@ -1,5 +1,5 @@
 # libcros
-A Rust library that gives a high-level API for interacting with Chrome(OS) devices.
+A Rust library that gives a high-level API for interacting with Chrome(OS) devices with ideally zero dependencies.
 
 >[!IMPORTANT]
 >Some parts of the library may be locked behind `features`, <br />
