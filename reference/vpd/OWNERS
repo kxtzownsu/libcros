@@ -1,8 +1,0 @@
-# The factory team are owners for VPD values (and format).
-include chromiumos/platform/factory:/OWNERS
-
-# primaary owner.
-jjsu@chromium.org
-
-roccochen@chromium.org
-hungte@chromium.org
