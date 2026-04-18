@@ -1,0 +1,9 @@
+[submodule "reference/vpd"]
+	path = reference/vpd
+	url = https://chromium.googlesource.com/chromiumos/platform/vpd
+[submodule "reference/vboot_reference"]
+	path = reference/vboot_reference
+	url = https://chromium.googlesource.com/chromiumos/platform/vboot_reference
+[submodule "reference/tpm2"]
+	path = reference/tpm2
+	url = https://chromium.googlesource.com/chromiumos/third_party/tpm2
