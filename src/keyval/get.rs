@@ -9,6 +9,7 @@ pub fn kv_get(ty: &str, key: &'static str) -> Option<KvValue> {
     ("int", KvValue::Int(_)) => Some(clone_int(val)),
     ("bool", KvValue::Bool(_)) => Some(clone_bool(val)),
     ("socket", KvValue::Socket(_)) => None,
+    ("file", KvValue::File(f)) => f.try_clone().ok().map(KvValue::File),
     _ => None,
   }
 }

@@ -3,7 +3,7 @@ pub mod keys {
   /// Internal disk path.
   pub const INTERNAL_DISK: &str = "internal_disk";
 
-  /// Global socket for GSC.
+  /// Global file handle for the GSC device.
   pub const GSC_SOCKET: &str = "gsc_socket";
 
   #[cfg(feature = "tlcl")]
@@ -26,6 +26,7 @@ pub mod keys {
 
 use std::{
   collections::HashMap,
+  fs::File,
   os::unix::net::UnixStream,
   sync::{Mutex, OnceLock},
 };
@@ -44,6 +45,7 @@ pub enum KvValue {
   Int(i64),
   Bool(bool),
   Socket(UnixStream),
+  File(File),
 }
 
 pub mod key_types {
@@ -51,6 +53,7 @@ pub mod key_types {
   pub const INT: &str = "int";
   pub const BOOL: &str = "bool";
   pub const SOCKET: &str = "socket";
+  pub const FILE: &str = "file";
 }
 
 static KV: OnceLock<Mutex<HashMap<&'static str, KvValue>>> = OnceLock::new();

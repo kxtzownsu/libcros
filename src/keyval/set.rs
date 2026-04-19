@@ -1,4 +1,4 @@
-use std::os::unix::net::UnixStream;
+use std::{fs::File, os::unix::net::UnixStream};
 
 use crate::keyval::{kv, KvValue};
 
@@ -33,6 +33,12 @@ impl From<bool> for KvValue {
 impl From<UnixStream> for KvValue {
   fn from(v: UnixStream) -> Self {
     KvValue::Socket(v)
+  }
+}
+
+impl From<File> for KvValue {
+  fn from(v: File) -> Self {
+    KvValue::File(v)
   }
 }
 
