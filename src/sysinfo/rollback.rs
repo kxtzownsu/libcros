@@ -1,52 +1,11 @@
 use crate::LOG_DBG;
 
 #[cfg(feature = "tlcl")]
-use crate::tlcl::TlclRead;
+use crate::{tlcl::TlclRead, tpm_nv_read};
 
 const FIRMWARE_ROLLBACK_NV_INDEX: u32 = 0x1007;
 const KERNEL_ROLLBACK_NV_INDEX: u32 = 0x1008;
 const FIRMWARE_MANAGEMENT_PARAMETERS_NV_INDEX: u32 = 0x100A;
-
-/// Macro to reduce boilerplate
-#[cfg(feature = "tlcl")]
-macro_rules! tpm_nv_read {
-  ($nv_index:expr, $size:expr, $parse_func:expr) => {{
-    let mut outbuf: [u8; $size] = unsafe { core::mem::zeroed() };
-
-    let rc = TlclRead(
-      $nv_index,
-      outbuf.as_mut_ptr() as *mut core::ffi::c_void,
-      $size as u32
-    );
-
-    /* Did the TPM return an error? */
-    if rc != crate::tlcl::constants::TPM_SUCCESS {
-      LOG_DBG!(
-        "TlclRead(0x{:X}, outbuf, 0x{:X}) failed with code 0x{:X}",
-        $nv_index,
-        $size,
-        rc
-      );
-      return u32::MAX; // -1
-    }
-
-    /* Is the response smaller than the size we expected? */
-    if outbuf.len() < $size {
-      LOG_DBG!(
-        "TlclRead(0x{:x}, outbuf, 0x{:x}) returned too few bytes (expected 0x{:x}, got 0x{:x})",
-        $nv_index,
-        $size,
-        $size,
-        outbuf.len()
-      );
-      return u32::MAX; // -1
-    }
-
-    let result = $parse_func(&outbuf);
-
-    result
-  }
-}}
 
 /// Fetch the active kernel rollback version from the TPM.
 /// Returns u32::MAX (0xFFFFFFFF) on error.
