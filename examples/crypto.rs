@@ -1,5 +1,5 @@
 use libcros::crypto::{crc32, adler32, sha1, sha256, hmac_sha256, pbkdf2_hmac_sha256};
-use libcros::{LOG, LOG_DBG, kv_get, kv_set, keys, libargs::ArgCheck};
+use libcros::{LOG, LOG_DBG, kv_get, kv_set, keys, key_types, keyval::KvValue, libargs::ArgCheck};
 
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();
@@ -28,7 +28,10 @@ fn main() {
   kv_set(keys::EXAMPLE, value);
 
   // always go through kv_get.
-  let data = kv_get(keys::EXAMPLE);
+  let data = match kv_get(key_types::STRING, keys::EXAMPLE) {
+    Some(KvValue::String(s)) => s,
+    _ => panic!("invalid or missing EXAMPLE value"),
+  };
   let bytes = data.as_bytes();
 
   LOG!("CRC32: 0x{:08x}", crc32(bytes));

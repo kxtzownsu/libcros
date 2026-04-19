@@ -57,13 +57,13 @@ fn main() {
   if flags_tpm_path.is_empty() {
     kv_set(libcros::keys::TPM_PATH, "/dev/tpm0");
   } else {
-    kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
+    kv_set(libcros::keys::TPM_PATH, &*flags_tpm_path);
   }
 
   Logger::init(verbose, true);
-  let tpm = kv_get(libcros::keys::TPM_PATH);
+  let tpm = kv_get(libcros::key_types::STRING, libcros::keys::TPM_PATH);
 
-  LOG!("using {}", tpm);
+  LOG!("using {:?}", tpm);
 
   /* TPM 1.2 requires physical presence for DefineSpace with PPWRITE/PPREAD */
   #[cfg(feature = "tpm1_2")]

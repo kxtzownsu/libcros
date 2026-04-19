@@ -3,7 +3,7 @@
 #![allow(non_camel_case_types)]
 
 use crate::{
-  keys, kv_get, kv_get_bool, kv_set,
+  keys, kv_get, kv_set, key_types, keyval::KvValue,
   tlcl::{
     bytes::{write_be16, write_be32},
     tpm20::constants::{
@@ -268,7 +268,7 @@ pub fn marshal_nv_read(
     command_body_ref = &*command_body;
   }
 
-  if kv_get_bool(keys::PH_DISABLED) {
+  if let Some(KvValue::Bool(true)) = kv_get(key_types::BOOL, keys::PH_DISABLED) {
     marshal_TPM_HANDLE(&mut buffer, command_body_ref.nvIndex, buffer_space)
   } else {
     marshal_TPM_HANDLE(&mut buffer, TPM_RH_PLATFORM, buffer_space)
@@ -496,9 +496,10 @@ pub fn tpm_marshal_command(
 
     marshal_u16(
       &mut header,
-      kv_get(keys::TPM_TAG)
-        .parse::<u16>()
-        .unwrap_or(TPM_ST_NO_SESSIONS),
+      match kv_get(key_types::INT, keys::TPM_TAG) {
+        Some(KvValue::Int(v)) => v as u16,
+        _ => TPM_ST_NO_SESSIONS,
+      },
       &mut header_space,
     );
     marshal_u32(&mut header, body_size as u32, &mut header_space);

@@ -10,6 +10,7 @@ fn main() {
     "-t",
     "Specify a custom TPM device to use in /dev/tpmX format",
   );
+  #[cfg(feature = "tpm2_0")]
   let ph_disabled: bool = args.fbool("--disable-platform-hierarchy", "-p", "disable platform hierarchy");
 
   args.check_help();
@@ -17,9 +18,10 @@ fn main() {
   if flags_tpm_path.is_empty() {
     kv_set(libcros::keys::TPM_PATH, "/dev/tpm0");
   } else {
-    kv_set(libcros::keys::TPM_PATH, &flags_tpm_path);
+    kv_set(libcros::keys::TPM_PATH, &*flags_tpm_path);
   }
 
+  #[cfg(feature = "tpm2_0")]
   if ph_disabled {
     kv_set(libcros::keys::PH_DISABLED, true);
   } else {
@@ -27,7 +29,7 @@ fn main() {
   }
 
   Logger::init(verbose, true);
-  kv_get(libcros::keys::TPM_PATH);
+  kv_get(libcros::key_types::STRING, libcros::keys::TPM_PATH);
 
   let tpm_version: String = get_tpm_version();
   LOG!("TPM version: {}", tpm_version);

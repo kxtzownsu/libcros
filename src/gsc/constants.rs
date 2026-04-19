@@ -467,3 +467,20 @@ pub struct cr50_stats_response {
   /* Time since last cold reset */
   pub cold_reset_time_s: u32,
 }
+
+const F_TAG: usize    = size_of::<u16>(); // 2
+const F_SUBCMD: usize = size_of::<u16>(); // 2
+
+const F_LEN: usize    = size_of::<u32>(); // 4
+const F_CODE: usize   = size_of::<u32>(); // 4
+const F_DIGEST: usize = size_of::<u32>(); // 4
+const F_ADDR: usize   = size_of::<u32>(); // 4
+
+pub const TPM_ORDINAL_OFFSET: usize      = F_TAG + F_LEN;
+pub const TPM_SUBCMD_OFFSET:  usize      = TPM_ORDINAL_OFFSET + F_CODE;
+pub const TPM_PKT_CMD_HEADER_SIZE: usize = TPM_SUBCMD_OFFSET + F_SUBCMD;
+pub const TPM_PKT_UPG_HEADER_SIZE: usize = TPM_PKT_CMD_HEADER_SIZE + F_DIGEST + F_ADDR;
+
+pub const MAX_RX_BUF_SIZE: usize   = 2048;
+pub const SIGNED_TRANSFER_SIZE: usize = 1024;
+pub const MAX_TX_BUF_SIZE: usize   = SIGNED_TRANSFER_SIZE + TPM_PKT_UPG_HEADER_SIZE;

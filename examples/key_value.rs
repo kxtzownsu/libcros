@@ -1,5 +1,5 @@
 use libcros::libargs::ArgCheck;
-use libcros::{LOG, LOG_DBG, kv_get, kv_set, keys};
+use libcros::{LOG, LOG_DBG, kv_get, kv_set, keys, key_types};
 
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();
@@ -12,10 +12,10 @@ fn main() {
     value = "Hello, World!".to_string();
   }
 
-  LOG!("value of {}: {}", keys::EXAMPLE, kv_get(keys::EXAMPLE));
+  LOG!("value of {}: {:?}", keys::EXAMPLE, kv_get(key_types::STRING, keys::EXAMPLE));
 
   LOG_DBG!("setting {} to {}", keys::EXAMPLE, value);
   kv_set(keys::EXAMPLE, value);
 
-  LOG!("value of {}: {}", keys::EXAMPLE, kv_get(keys::EXAMPLE));
+  LOG!("value of {}: {:?}", keys::EXAMPLE, kv_get(key_types::STRING, keys::EXAMPLE));
 }
