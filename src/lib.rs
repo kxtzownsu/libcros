@@ -1,6 +1,6 @@
 /// Easy-to-use key=value system with types.
 pub mod keyval;
-pub use keyval::{keys, key_types, kv_get, kv_set};
+pub use keyval::*;
 
 /// Easy-to-use logging API
 pub mod logging;
