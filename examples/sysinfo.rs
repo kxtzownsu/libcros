@@ -1,4 +1,5 @@
-use libcros::sysinfo::{get_kernel_rollback_version, get_firmware_rollback_version, get_tpm_version, get_firmware_management_parameters};
+use libcros::sysinfo::backend::{open_gsc_socket, close_gsc_socket};
+use libcros::sysinfo::{get_kernel_rollback_version, get_firmware_rollback_version, get_tpm_version, get_firmware_management_parameters, get_gsc_version, get_gsc_board_id};
 use libcros::libargs::ArgCheck;
 use libcros::{LOG, Logger, kv_set, kv_get};
 
@@ -46,6 +47,18 @@ fn main() {
   } else {
     LOG!("FWMP: 0x{:08x}", fwmp);
   }
+
+  /* Before doing anything, we must open the GSC socket.. */
+  open_gsc_socket();
+
+  let fpdu = get_gsc_version();
+  LOG!("fpdu: {:x?}", fpdu);
+
+  let bid = get_gsc_board_id();
+  LOG!("Board ID: {:x?}", bid);
+
+  /* Now that we're done, we can close our connection to the GSC. */
+  close_gsc_socket();
   
   /*
   TODO: we need the following:
