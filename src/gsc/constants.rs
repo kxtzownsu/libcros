@@ -468,6 +468,14 @@ pub struct cr50_stats_response {
   pub cold_reset_time_s: u32,
 }
 
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
+pub struct board_id {
+  pub board_type: u32,
+  pub type_inv: u32,
+  pub flags: u32,
+}
+
 const F_TAG: usize    = size_of::<u16>(); // 2
 const F_SUBCMD: usize = size_of::<u16>(); // 2
 
