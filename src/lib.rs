@@ -22,7 +22,7 @@ pub mod structs;
 pub mod sysinfo;
 
 /// Send/receive vendor commands to/from the GSC (Google Security Chip) / TPM.
-// pub mod gsc;
+pub mod gsc;
 
 /*
 Anything that requires a dependency should be locked behind a feature flag.
