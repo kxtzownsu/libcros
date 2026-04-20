@@ -1,9 +1,11 @@
 pub mod constants;
 
-#[cfg(feature = "tlcl")]
-pub use crate::tlcl::tpm20;
-
-#[cfg(not(feature = "tlcl"))]
+/*
+  Ideally we'd want to use the constants from Tlcl, but
+  there is always a chance the user could either not want
+  all of Tlcl, or they're on TPM 1.2 so they wouldn't be
+  able to access TPM 2.0 constants.
+*/
 pub mod tpm20 {
   pub mod types {
     pub const TPM_RC_BAD_TAG: u32 = 0x01E;

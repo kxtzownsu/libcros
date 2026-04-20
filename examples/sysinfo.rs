@@ -1,5 +1,4 @@
-#[cfg(feature = "tlcl")]
-pub use libcros::tlcl::tpm20;
+
 use libcros::{
   LOG, Logger, kv_get, kv_set,
   libargs::ArgCheck,
@@ -10,7 +9,12 @@ use libcros::{
   },
 };
 
-#[cfg(not(feature = "tlcl"))]
+/*
+  Ideally we'd want to use the constants from Tlcl, but
+  there is always a chance the user could either not want
+  all of Tlcl, or they're on TPM 1.2 so they wouldn't be
+  able to access TPM 2.0 constants.
+*/
 pub mod tpm20 {
   pub mod types {
     pub const TPM_RC_1: u32 = 0x100;
