@@ -2,7 +2,7 @@
 
 use crate::tlcl::tpm20::{
   constants::{
-    tpm2_shutdown_cmd, tpm2_startup_cmd, TPM2_Shutdown, TPM2_Startup, TPM_SU_CLEAR, TPM_SU_STATE,
+    TPM_SU_CLEAR, TPM_SU_STATE, TPM2_Shutdown, TPM2_Startup, tpm2_shutdown_cmd, tpm2_startup_cmd,
   },
   tpm_get_response_code,
 };

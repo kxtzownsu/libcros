@@ -5,7 +5,7 @@ use std::{
   sync::OnceLock,
 };
 
-use libc::{tcgetattr, tcsetattr, termios, ECHO, ICANON, STDIN_FILENO, TCSANOW};
+use libc::{ECHO, ICANON, STDIN_FILENO, TCSANOW, tcgetattr, tcsetattr, termios};
 use regex::Regex;
 
 pub fn ansi_escape_regex() -> &'static Regex {

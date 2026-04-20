@@ -1,9 +1,13 @@
-use crate::gsc::constants::{
-  first_response_pdu, signed_header_version, board_id,
-  vendor_cmd_cc::EXTENSION_FW_UPGRADE, vendor_cmd_cc::VENDOR_CC_GET_BOARD_ID,
+use crate::{
+  gsc::{
+    constants::{
+      board_id, first_response_pdu, signed_header_version,
+      vendor_cmd_cc::{EXTENSION_FW_UPGRADE, VENDOR_CC_GET_BOARD_ID},
+    },
+    read_response, send_command,
+  },
+  keyval::{KvValue, key_types, keys, kv_get},
 };
-use crate::gsc::{read_response, send_command};
-use crate::keyval::{kv_get, keys, key_types, KvValue};
 
 const PDU_MAX: first_response_pdu = first_response_pdu {
   return_value: u32::MAX,
@@ -11,8 +15,16 @@ const PDU_MAX: first_response_pdu = first_response_pdu {
   backup_ro_offset: u32::MAX,
   backup_rw_offset: u32::MAX,
   shv: [
-    signed_header_version { minor: u32::MAX, major: u32::MAX, epoch: u32::MAX },
-    signed_header_version { minor: u32::MAX, major: u32::MAX, epoch: u32::MAX },
+    signed_header_version {
+      minor: u32::MAX,
+      major: u32::MAX,
+      epoch: u32::MAX,
+    },
+    signed_header_version {
+      minor: u32::MAX,
+      major: u32::MAX,
+      epoch: u32::MAX,
+    },
   ],
   keyid: [u32::MAX, u32::MAX],
 };
@@ -20,7 +32,7 @@ const PDU_MAX: first_response_pdu = first_response_pdu {
 const BID_MAX: board_id = board_id {
   board_type: u32::MAX,
   type_inv: u32::MAX,
-  flags: u32::MAX
+  flags: u32::MAX,
 };
 
 pub fn get_gsc_version() -> first_response_pdu {

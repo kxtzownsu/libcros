@@ -2,8 +2,8 @@
 
 use crate::tlcl::tpm12::{
   constants::{
-    tpm1_physical_presence_cmd, TPM_ORD_PhysicalEnable, TSC_ORD_PhysicalPresence,
-    TPM_PHYSICAL_PRESENCE_CMD_ENABLE, TPM_PHYSICAL_PRESENCE_PRESENT,
+    TPM_ORD_PhysicalEnable, TPM_PHYSICAL_PRESENCE_CMD_ENABLE, TPM_PHYSICAL_PRESENCE_PRESENT,
+    TSC_ORD_PhysicalPresence, tpm1_physical_presence_cmd,
   },
   tpm_get_response_code,
 };

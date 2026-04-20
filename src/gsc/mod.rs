@@ -6,7 +6,7 @@ pub use crate::tlcl::tpm20;
 #[cfg(not(feature = "tlcl"))]
 pub mod tpm20 {
   pub mod types {
-      pub const TPM_RC_BAD_TAG: u32 = 0x01E;
+    pub const TPM_RC_BAD_TAG: u32 = 0x01E;
   }
 
   pub mod constants {
@@ -16,12 +16,13 @@ pub mod tpm20 {
 
 use std::io::{Read, Write};
 
-use crate::{LOG_DBG, LOG_FATAL_NOEXIT};
 use constants::{
-  vendor_cmd_cc, vendor_cmd_rc, CONFIG_EXTENSION_COMMAND, MAX_RX_BUF_SIZE, MAX_TX_BUF_SIZE,
-  TPM_CC_VENDOR_BIT_MASK, TPM_ORDINAL_OFFSET, TPM_PKT_CMD_HEADER_SIZE, TPM_PKT_UPG_HEADER_SIZE,
-  TPM_SUBCMD_OFFSET, VENDOR_RC_ERR,
+  CONFIG_EXTENSION_COMMAND, MAX_RX_BUF_SIZE, MAX_TX_BUF_SIZE, TPM_CC_VENDOR_BIT_MASK,
+  TPM_ORDINAL_OFFSET, TPM_PKT_CMD_HEADER_SIZE, TPM_PKT_UPG_HEADER_SIZE, TPM_SUBCMD_OFFSET,
+  VENDOR_RC_ERR, vendor_cmd_cc, vendor_cmd_rc,
 };
+
+use crate::{LOG_DBG, LOG_FATAL_NOEXIT};
 
 pub fn send_command<W: Write>(
   tpm: &mut W,

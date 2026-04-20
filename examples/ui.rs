@@ -1,14 +1,14 @@
-use libcros::ui::header::ui_header;
-use libcros::ui::menu::selection_menu;
-use libcros::ui::*;
-use libcros::LOG;
+use libcros::{
+  LOG,
+  ui::{header::ui_header, menu::selection_menu, *},
+};
 
 const SPLASH: &str = concat!(
-r#"example splash here
+  r#"example splash here
 (can be multi-line)"#
 );
 
-fn menu_handler(option: MenuOption){
+fn menu_handler(option: MenuOption) {
   if !option.enabled {
     return;
   }
@@ -45,26 +45,10 @@ fn main() {
     ui_header(&SPLASH, &text);
 
     let options = vec![
-      MenuOption::new(
-        "Foobar",
-        true,
-        constants::COLOR_RESET
-      ),
-      MenuOption::new(
-        "Example",
-        true,
-        constants::COLOR_GREEN_B
-      ),
-      MenuOption::new(
-        "Disabled",
-        false,
-        constants::COLOR_RESET
-      ),
-      MenuOption::new(
-        "Exit",
-        true,
-        constants::COLOR_RESET,
-      )
+      MenuOption::new("Foobar", true, constants::COLOR_RESET),
+      MenuOption::new("Example", true, constants::COLOR_GREEN_B),
+      MenuOption::new("Disabled", false, constants::COLOR_RESET),
+      MenuOption::new("Exit", true, constants::COLOR_RESET),
     ];
 
     if let Some(choice) = selection_menu(&options) {

@@ -1,4 +1,4 @@
-use crate::keyval::{kv, KvValue};
+use crate::keyval::{KvValue, kv};
 
 pub fn kv_get(ty: &str, key: &'static str) -> Option<KvValue> {
   let map = kv().lock().unwrap();

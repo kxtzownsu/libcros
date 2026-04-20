@@ -7,9 +7,9 @@ use crate::tlcl::{
   },
   tpm12::{
     constants::{
-      tpm1_nv_define_space_cmd, TPM_ORD_GetCapability, TPM_ORD_NV_DefineSpace, TPM_AUTH_DATA_LEN,
-      TPM_BUFFER_SIZE, TPM_CAP_NV_INDEX, TPM_NV_AUTH_POLICY, TPM_TAG_RQU_COMMAND,
-      TPM_TAG_RSP_COMMAND,
+      TPM_AUTH_DATA_LEN, TPM_BUFFER_SIZE, TPM_CAP_NV_INDEX, TPM_NV_AUTH_POLICY,
+      TPM_ORD_GetCapability, TPM_ORD_NV_DefineSpace, TPM_TAG_RQU_COMMAND, TPM_TAG_RSP_COMMAND,
+      tpm1_nv_define_space_cmd,
     },
     tpm_get_response_code,
     utils::{

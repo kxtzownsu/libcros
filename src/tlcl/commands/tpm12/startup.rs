@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::tlcl::tpm12::{
-  constants::{tpm1_startup_cmd, TPM_ORD_SaveState, TPM_ORD_Startup, TPM_ST_CLEAR, TPM_ST_STATE},
+  constants::{TPM_ORD_SaveState, TPM_ORD_Startup, TPM_ST_CLEAR, TPM_ST_STATE, tpm1_startup_cmd},
   tpm_get_response_code,
 };
 

@@ -31,13 +31,13 @@ use std::{
   sync::{Mutex, OnceLock},
 };
 
+pub mod erase;
 pub mod get;
 pub mod set;
-pub mod erase;
 
+pub use erase::kv_erase;
 pub use get::kv_get;
 pub use set::kv_set;
-pub use erase::kv_erase;
 
 #[derive(Debug)]
 pub enum KvValue {

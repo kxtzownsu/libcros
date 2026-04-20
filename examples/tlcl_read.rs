@@ -23,7 +23,12 @@ fn main() {
   Logger::init(verbose, true);
   let tpm = kv_get(libcros::key_types::STRING, libcros::keys::TPM_PATH);
 
-  LOG!("reading {} bytes from index {} on {:?}", SIZE, NV_INDEX, tpm);
+  LOG!(
+    "reading {} bytes from index {} on {:?}",
+    SIZE,
+    NV_INDEX,
+    tpm
+  );
   let mut outbuf = [0u8; SIZE];
   let rc = TlclRead(
     NV_INDEX,

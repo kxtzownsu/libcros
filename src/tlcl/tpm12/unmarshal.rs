@@ -4,8 +4,8 @@
 use crate::tlcl::{
   bytes::{read_be16, read_be32},
   tpm12::constants::{
-    nv_read_response, tpm1_response, TPM_ORD_NV_ReadValue, TPM_COMMAND, TPM_RESP_HEADER_SIZE,
-    TPM_SUCCESS, TPM_TAG_RSP_COMMAND,
+    TPM_COMMAND, TPM_ORD_NV_ReadValue, TPM_RESP_HEADER_SIZE, TPM_SUCCESS, TPM_TAG_RSP_COMMAND,
+    nv_read_response, tpm1_response,
   },
 };
 

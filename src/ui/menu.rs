@@ -1,9 +1,9 @@
 use std::io::{self, Read, Write};
 
 use crate::ui::{
+  MenuOption,
   constants::COLOR_RESET,
   utils::{disable_raw_mode, enable_raw_mode},
-  MenuOption,
 };
 
 /// Arrow-key menu.

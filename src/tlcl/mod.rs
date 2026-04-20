@@ -12,7 +12,7 @@ use std::{
   time::Duration,
 };
 
-use crate::{keyval::KvValue, keys, kv_get, LOG_FATAL};
+use crate::{LOG_FATAL, keys, keyval::KvValue, kv_get};
 
 pub const TPM_MAX_RETRIES: u32 = 5;
 pub const TPM_RETRY_DELAY_MS: u64 = 100;
@@ -36,7 +36,7 @@ pub fn tpm_xmit(
     Some(KvValue::String(s)) => s,
     _ => LOG_FATAL!("TPM_PATH missing or wrong type!"),
   };
-  
+
   if tpm_path.is_empty() {
     LOG_FATAL!("TPM_PATH not set! cannot continue!");
   }
@@ -157,17 +157,17 @@ pub use permissions::*;
 
 #[cfg(all(feature = "tpm2_0", feature = "tpm1_2"))]
 pub fn TlclGetTPMVersion() -> String {
-    "2.0".to_string()
+  "2.0".to_string()
 }
 
 #[cfg(all(feature = "tpm2_0", not(feature = "tpm1_2")))]
 pub fn TlclGetTPMVersion() -> String {
-    "2.0".to_string()
+  "2.0".to_string()
 }
 
 #[cfg(all(feature = "tpm1_2", not(feature = "tpm2_0")))]
 pub fn TlclGetTPMVersion() -> String {
-    "1.2".to_string()
+  "1.2".to_string()
 }
 
 #[cfg(not(any(feature = "tpm1_2", feature = "tpm2_0")))]

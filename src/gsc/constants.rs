@@ -6,7 +6,9 @@
 #![allow(non_camel_case_types, non_upper_case_globals, dead_code)]
 
 macro_rules! BIT {
-  ($nr:expr) => (1usize << $nr)
+  ($nr:expr) => {
+    1usize << $nr
+  };
 }
 
 #[repr(u32)]
@@ -360,22 +362,20 @@ pub struct ti50_stats {
   pub crypto_init_time: u32,
 }
 
-pub const METRICSV_BITS_USED_SHIFT: u32      = 27;
-pub const METRICSV_RDD_KEEP_ALIVE_MASK: u32    = 3;
+pub const METRICSV_BITS_USED_SHIFT: u32 = 27;
+pub const METRICSV_RDD_KEEP_ALIVE_MASK: u32 = 3;
 pub const METRICSV_RDD_KEEP_ALIVE_AT_BOOT_SHIFT: u32 = 2;
-pub const METRICSV_RDD_KEEP_ALIVE_AT_BOOT_MASK: u32 =
-  1 << METRICSV_RDD_KEEP_ALIVE_AT_BOOT_SHIFT;
-pub const METRICSV_CCD_MODE_SHIFT: u32  = 3;
-pub const METRICSV_CCD_MODE_MASK: u32   = 1 << METRICSV_CCD_MODE_SHIFT;
+pub const METRICSV_RDD_KEEP_ALIVE_AT_BOOT_MASK: u32 = 1 << METRICSV_RDD_KEEP_ALIVE_AT_BOOT_SHIFT;
+pub const METRICSV_CCD_MODE_SHIFT: u32 = 3;
+pub const METRICSV_CCD_MODE_MASK: u32 = 1 << METRICSV_CCD_MODE_SHIFT;
 pub const METRICSV_WP_ASSERTED_SHIFT: u32 = 4;
-pub const METRICSV_WP_ASSERTED_MASK: u32  = 1 << METRICSV_WP_ASSERTED_SHIFT;
+pub const METRICSV_WP_ASSERTED_MASK: u32 = 1 << METRICSV_WP_ASSERTED_SHIFT;
 pub const METRICSV_ALLOW_UNVERIFIED_RO_SHIFT: u32 = 5;
-pub const METRICSV_ALLOW_UNVERIFIED_RO_MASK: u32 =
-  1 << METRICSV_ALLOW_UNVERIFIED_RO_SHIFT;
+pub const METRICSV_ALLOW_UNVERIFIED_RO_MASK: u32 = 1 << METRICSV_ALLOW_UNVERIFIED_RO_SHIFT;
 pub const METRICSV_IS_PROD_SHIFT: u32 = 6;
-pub const METRICSV_IS_PROD_MASK: u32  = 1 << METRICSV_IS_PROD_SHIFT;
+pub const METRICSV_IS_PROD_MASK: u32 = 1 << METRICSV_IS_PROD_SHIFT;
 pub const METRICSV_RDD_IS_DETECTED_SHIFT: u32 = 7;
-pub const METRICSV_RDD_IS_DETECTED_MASK: u32  = 1 << METRICSV_RDD_IS_DETECTED_SHIFT;
+pub const METRICSV_RDD_IS_DETECTED_MASK: u32 = 1 << METRICSV_RDD_IS_DETECTED_SHIFT;
 
 /* End Ti50 Specific Structs */
 /*****************************************************************************/
@@ -397,19 +397,19 @@ pub enum wp_options {
 /*
  * Subcommand code, used to set write protect.
  */
-pub const WPV_UPDATE: usize     = BIT!(0);
-pub const WPV_ENABLE: usize     = BIT!(1);
-pub const WPV_FORCE: usize      = BIT!(2);
-pub const WPV_ATBOOT_SET: usize   = BIT!(3);
-pub const WPV_ATBOOT_ENABLE: usize  = BIT!(4);
+pub const WPV_UPDATE: usize = BIT!(0);
+pub const WPV_ENABLE: usize = BIT!(1);
+pub const WPV_FORCE: usize = BIT!(2);
+pub const WPV_ATBOOT_SET: usize = BIT!(3);
+pub const WPV_ATBOOT_ENABLE: usize = BIT!(4);
 pub const WPV_FWMP_FORCE_WP_EN: usize = BIT!(5);
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct signed_header_version {
-    pub minor: u32,
-    pub major: u32,
-    pub epoch: u32,
+  pub minor: u32,
+  pub major: u32,
+  pub epoch: u32,
 }
 
 /// Packet to be recieved during connection establishment.
@@ -476,19 +476,19 @@ pub struct board_id {
   pub flags: u32,
 }
 
-const F_TAG: usize    = size_of::<u16>(); // 2
+const F_TAG: usize = size_of::<u16>(); // 2
 const F_SUBCMD: usize = size_of::<u16>(); // 2
 
-const F_LEN: usize    = size_of::<u32>(); // 4
-const F_CODE: usize   = size_of::<u32>(); // 4
+const F_LEN: usize = size_of::<u32>(); // 4
+const F_CODE: usize = size_of::<u32>(); // 4
 const F_DIGEST: usize = size_of::<u32>(); // 4
-const F_ADDR: usize   = size_of::<u32>(); // 4
+const F_ADDR: usize = size_of::<u32>(); // 4
 
-pub const TPM_ORDINAL_OFFSET: usize      = F_TAG + F_LEN;
-pub const TPM_SUBCMD_OFFSET:  usize      = TPM_ORDINAL_OFFSET + F_CODE;
+pub const TPM_ORDINAL_OFFSET: usize = F_TAG + F_LEN;
+pub const TPM_SUBCMD_OFFSET: usize = TPM_ORDINAL_OFFSET + F_CODE;
 pub const TPM_PKT_CMD_HEADER_SIZE: usize = TPM_SUBCMD_OFFSET + F_SUBCMD;
 pub const TPM_PKT_UPG_HEADER_SIZE: usize = TPM_PKT_CMD_HEADER_SIZE + F_DIGEST + F_ADDR;
 
-pub const MAX_RX_BUF_SIZE: usize   = 2048;
+pub const MAX_RX_BUF_SIZE: usize = 2048;
 pub const SIGNED_TRANSFER_SIZE: usize = 1024;
-pub const MAX_TX_BUF_SIZE: usize   = SIGNED_TRANSFER_SIZE + TPM_PKT_UPG_HEADER_SIZE;
+pub const MAX_TX_BUF_SIZE: usize = SIGNED_TRANSFER_SIZE + TPM_PKT_UPG_HEADER_SIZE;

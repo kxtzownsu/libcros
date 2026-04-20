@@ -1,4 +1,4 @@
-use crate::{tlcl::vb2ex_tpm_send_recv, LOG_DBG};
+use crate::{LOG_DBG, tlcl::vb2ex_tpm_send_recv};
 
 pub(crate) fn tpm_get_response<const N: usize, R, MarshalFn, UnmarshalFn, CodeFn>(
   command: u32,

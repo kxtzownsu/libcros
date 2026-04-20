@@ -3,16 +3,18 @@
 #![allow(non_camel_case_types)]
 
 use crate::{
-  keys, kv_get, kv_set, key_types, keyval::KvValue,
+  key_types, keys,
+  keyval::KvValue,
+  kv_get, kv_set,
   tlcl::{
     bytes::{write_be16, write_be32},
     tpm20::constants::{
-      tpm2_nv_define_space_cmd, tpm2_nv_read_cmd, tpm2_nv_read_public_cmd,
-      tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header, tpm2_shutdown_cmd,
-      tpm2_startup_cmd, tpm_header, TPM2_Clear, TPM2_NV_DefineSpace, TPM2_NV_Read,
-      TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write, TPM2_Shutdown, TPM2_Startup, TPM2B,
-      TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START, TPMS_NV_PUBLIC, TPM_RH_OWNER,
-      TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS,
+      TPM_RH_OWNER, TPM_RH_PLATFORM, TPM_RS_PW, TPM_ST_NO_SESSIONS, TPM_ST_SESSIONS, TPM2_Clear,
+      TPM2_NV_DefineSpace, TPM2_NV_Read, TPM2_NV_ReadPublic, TPM2_NV_UndefineSpace, TPM2_NV_Write,
+      TPM2_Shutdown, TPM2_Startup, TPM2B, TPMA_NV_PLATFORMCREATE, TPMI_RH_NV_INDEX_OWNER_START,
+      TPMS_NV_PUBLIC, tpm_header, tpm2_nv_define_space_cmd, tpm2_nv_read_cmd,
+      tpm2_nv_read_public_cmd, tpm2_nv_undefine_space_cmd, tpm2_nv_write_cmd, tpm2_session_header,
+      tpm2_shutdown_cmd, tpm2_startup_cmd,
     },
   },
 };

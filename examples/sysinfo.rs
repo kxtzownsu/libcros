@@ -1,10 +1,14 @@
-use libcros::sysinfo::backend::{open_gsc_socket, close_gsc_socket};
-use libcros::sysinfo::{get_kernel_rollback_version, get_firmware_rollback_version, get_tpm_version, get_firmware_management_parameters, get_gsc_version, get_gsc_board_id};
-use libcros::libargs::ArgCheck;
-use libcros::{LOG, Logger, kv_set, kv_get};
-
 #[cfg(feature = "tlcl")]
 pub use libcros::tlcl::tpm20;
+use libcros::{
+  LOG, Logger, kv_get, kv_set,
+  libargs::ArgCheck,
+  sysinfo::{
+    backend::{close_gsc_socket, open_gsc_socket},
+    get_firmware_management_parameters, get_firmware_rollback_version, get_gsc_board_id,
+    get_gsc_version, get_kernel_rollback_version, get_tpm_version,
+  },
+};
 
 #[cfg(not(feature = "tlcl"))]
 pub mod tpm20 {
@@ -23,7 +27,11 @@ fn main() {
     "Specify a custom TPM device to use in /dev/tpmX format",
   );
   #[cfg(feature = "tpm2_0")]
-  let ph_disabled: bool = args.fbool("--disable-platform-hierarchy", "-p", "disable platform hierarchy");
+  let ph_disabled: bool = args.fbool(
+    "--disable-platform-hierarchy",
+    "-p",
+    "disable platform hierarchy",
+  );
 
   args.check_help();
 
@@ -43,7 +51,6 @@ fn main() {
   Logger::init(verbose, true);
   kv_get(libcros::key_types::STRING, libcros::keys::TPM_PATH);
 
-
   let tpm_version: String = get_tpm_version();
   let kernver = get_kernel_rollback_version();
   let fwver = get_firmware_rollback_version();
@@ -58,19 +65,33 @@ fn main() {
   let keyid_rw = u32::from_be(version.keyid[1]);
   let backup_ro = u32::from_be(version.backup_ro_offset);
   let backup_rw = u32::from_be(version.backup_rw_offset);
-  let shv_ro = (version.shv[0].epoch, u32::from_be(version.shv[0].major), u32::from_be(version.shv[0].minor));
-  let shv_rw = (version.shv[1].epoch, u32::from_be(version.shv[1].major), u32::from_be(version.shv[1].minor));
+  let shv_ro = (
+    version.shv[0].epoch,
+    u32::from_be(version.shv[0].major),
+    u32::from_be(version.shv[0].minor),
+  );
+  let shv_rw = (
+    version.shv[1].epoch,
+    u32::from_be(version.shv[1].major),
+    u32::from_be(version.shv[1].minor),
+  );
 
   let board_type: u32 = u32::from_be(bid.board_type);
-  let type_inv:u32 = u32::from_be(bid.type_inv);
+  let type_inv: u32 = u32::from_be(bid.type_inv);
   let flags: u32 = u32::from_be(bid.flags);
 
   /* Now that we're done, we can close our connection to the GSC. */
   close_gsc_socket();
 
   LOG!("TPM version: {}", tpm_version);
-  LOG!("Kernel rollback version: 0x{:08x}", kernver.rollback_version);
-  LOG!("Firmware rollback version: 0x{:08x}", fwver.rollback_version);
+  LOG!(
+    "Kernel rollback version: 0x{:08x}",
+    kernver.rollback_version
+  );
+  LOG!(
+    "Firmware rollback version: 0x{:08x}",
+    fwver.rollback_version
+  );
 
   if fwmp.rc == tpm20::types::TPM_RC_HANDLE | tpm20::types::TPM_RC_1 {
     LOG!("FWMP index doesn't exist!")
@@ -89,8 +110,13 @@ fn main() {
   LOG!(" - RO: {}.{}.{}", shv_ro.0, shv_ro.1, shv_ro.2);
   LOG!(" - RW: {}.{}.{}", shv_rw.0, shv_rw.1, shv_rw.2);
 
-  LOG!("Board ID: {:08x}:{:08x}:{:08x}", board_type, type_inv, flags);
-  
+  LOG!(
+    "Board ID: {:08x}:{:08x}:{:08x}",
+    board_type,
+    type_inv,
+    flags
+  );
+
   /*
   TODO: we need the following:
   - emmc

@@ -2,7 +2,7 @@
 use libcros::tlcl::constants::TPM_E_INVALID_POSTINIT;
 #[cfg(feature = "tpm2_0")]
 use libcros::tlcl::tpm20::types::TPM_RC_INITIALIZE;
-use libcros::{kv_get, kv_set, libargs::ArgCheck, tlcl::TlclResume, Logger, LOG, LOG_FATAL};
+use libcros::{LOG, LOG_FATAL, Logger, kv_get, kv_set, libargs::ArgCheck, tlcl::TlclResume};
 
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();

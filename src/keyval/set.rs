@@ -1,6 +1,6 @@
 use std::{fs::File, os::unix::net::UnixStream};
 
-use crate::keyval::{kv, KvValue};
+use crate::keyval::{KvValue, kv};
 
 pub fn kv_set(key: &'static str, val: impl Into<KvValue>) {
   kv().lock().unwrap().insert(key, val.into());
