@@ -57,6 +57,12 @@ pub struct GPTHeader {
   pub partition_entry_array_crc32: u32,
 }
 
+#[derive(Debug)]
+pub struct SysinfoRollbackVersionResponse {
+  pub rc: u32,
+  pub rollback_version: u32,
+}
+
 pub fn write_struct<T>(value: &T, out: &mut [u8]) {
   let size = core::mem::size_of::<T>();
   let bytes = size.min(out.len());

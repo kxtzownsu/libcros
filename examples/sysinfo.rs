@@ -3,6 +3,17 @@ use libcros::sysinfo::{get_kernel_rollback_version, get_firmware_rollback_versio
 use libcros::libargs::ArgCheck;
 use libcros::{LOG, Logger, kv_set, kv_get};
 
+#[cfg(feature = "tlcl")]
+pub use libcros::tlcl::tpm20;
+
+#[cfg(not(feature = "tlcl"))]
+pub mod tpm20 {
+  pub mod types {
+    pub const TPM_RC_1: u32 = 0x100;
+    pub const TPM_RC_HANDLE: u32 = 0x08B;
+  }
+}
+
 fn main() {
   let mut args: ArgCheck = ArgCheck::new();
   let verbose: bool = args.fbool("--verbose", "", "Enable debug messages");
@@ -32,33 +43,53 @@ fn main() {
   Logger::init(verbose, true);
   kv_get(libcros::key_types::STRING, libcros::keys::TPM_PATH);
 
+
   let tpm_version: String = get_tpm_version();
-  LOG!("TPM version: {}", tpm_version);
+  let kernver = get_kernel_rollback_version();
+  let fwver = get_firmware_rollback_version();
+  let fwmp = get_firmware_management_parameters();
 
-  let kernver: u32 = get_kernel_rollback_version();
-  LOG!("Kernel rollback version: 0x{:08x}", kernver);
-
-  let fwver: u32 = get_firmware_rollback_version();
-  LOG!("Firmware rollback version: 0x{:08x}", fwver);
-
-  let fwmp: u32 = get_firmware_management_parameters();
-  if fwmp == u32::MAX {
-    LOG!("FWMP index doesn't exist!")
-  } else {
-    LOG!("FWMP: 0x{:08x}", fwmp);
-  }
-
-  /* Before doing anything, we must open the GSC socket.. */
+  /* Before doing anything GSC-related, but after doing our regular TPM activities, we must open the GSC socket.. */
   open_gsc_socket();
+  let version: libcros::gsc::constants::first_response_pdu = get_gsc_version();
+  let bid: libcros::gsc::constants::board_id = get_gsc_board_id();
 
-  let fpdu = get_gsc_version();
-  LOG!("fpdu: {:x?}", fpdu);
+  let keyid_ro = u32::from_be(version.keyid[0]);
+  let keyid_rw = u32::from_be(version.keyid[1]);
+  let backup_ro = u32::from_be(version.backup_ro_offset);
+  let backup_rw = u32::from_be(version.backup_rw_offset);
+  let shv_ro = (version.shv[0].epoch, u32::from_be(version.shv[0].major), u32::from_be(version.shv[0].minor));
+  let shv_rw = (version.shv[1].epoch, u32::from_be(version.shv[1].major), u32::from_be(version.shv[1].minor));
 
-  let bid = get_gsc_board_id();
-  LOG!("Board ID: {:x?}", bid);
+  let board_type: u32 = u32::from_be(bid.board_type);
+  let type_inv:u32 = u32::from_be(bid.type_inv);
+  let flags: u32 = u32::from_be(bid.flags);
 
   /* Now that we're done, we can close our connection to the GSC. */
   close_gsc_socket();
+
+  LOG!("TPM version: {}", tpm_version);
+  LOG!("Kernel rollback version: 0x{:08x}", kernver.rollback_version);
+  LOG!("Firmware rollback version: 0x{:08x}", fwver.rollback_version);
+
+  if fwmp.rc == tpm20::types::TPM_RC_HANDLE | tpm20::types::TPM_RC_1 {
+    LOG!("FWMP index doesn't exist!")
+  } else {
+    /* This is actually FWMP flags, but it's stored in rollback_version */
+    LOG!("FWMP: 0x{:08x}", fwmp.rollback_version);
+  }
+
+  LOG!("Key IDs:");
+  LOG!(" - RO: {:x}", keyid_ro);
+  LOG!(" - RW: {:x}", keyid_rw);
+  LOG!("Backup Offsets:");
+  LOG!(" - Inactive RO: {:x}", backup_ro);
+  LOG!(" - Inactive RW: {:x}", backup_rw);
+  LOG!("Versions:");
+  LOG!(" - RO: {}.{}.{}", shv_ro.0, shv_ro.1, shv_ro.2);
+  LOG!(" - RW: {}.{}.{}", shv_rw.0, shv_rw.1, shv_rw.2);
+
+  LOG!("Board ID: {:08x}:{:08x}:{:08x}", board_type, type_inv, flags);
   
   /*
   TODO: we need the following:

@@ -12,37 +12,37 @@ use crate::tlcl::TlclRead;
     let rc = TlclRead(
       $nv_index,
       outbuf.as_mut_ptr() as *mut core::ffi::c_void,
-      $size as u32
+      $size as u32,
     );
 
-    /* Did the TPM return an error? */
     if rc != crate::tlcl::constants::TPM_SUCCESS {
       LOG_DBG!(
         "TlclRead(0x{:X}, outbuf, 0x{:X}) failed with code 0x{:X}",
-        $nv_index,
-        $size,
-        rc
+        $nv_index, $size, rc
       );
-      return u32::MAX; // -1
+      return crate::structs::SysinfoRollbackVersionResponse {
+        rc,
+        rollback_version: u32::MAX,
+      };
     }
 
-    /* Is the response smaller than the size we expected? */
     if outbuf.len() < $size {
       LOG_DBG!(
         "TlclRead(0x{:x}, outbuf, 0x{:x}) returned too few bytes (expected 0x{:x}, got 0x{:x})",
-        $nv_index,
-        $size,
-        $size,
-        outbuf.len()
+        $nv_index, $size, $size, outbuf.len()
       );
-      return u32::MAX; // -1
+      return crate::structs::SysinfoRollbackVersionResponse {
+        rc: u32::MAX,
+        rollback_version: u32::MAX,
+      };
     }
 
-    let result = $parse_func(&outbuf);
-
-    result
-  }
-}}
+    crate::structs::SysinfoRollbackVersionResponse {
+      rc: rc,
+      rollback_version: $parse_func(&outbuf),
+    }
+  }};
+}
 
 const TPM_DEVICES: &[&str] = &[
   "/dev/tpm0",     /* Cr50 & Ti50 */
