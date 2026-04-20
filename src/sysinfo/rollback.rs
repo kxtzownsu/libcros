@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "tlcl"), allow(dead_code))] /* For NV index consts */
+
 use crate::LOG_DBG;
 
 #[cfg(feature = "tlcl")]
