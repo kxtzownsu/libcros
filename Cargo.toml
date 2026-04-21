@@ -17,7 +17,6 @@ exclude = [
 all-features = true
 
 [dependencies]
-clearscreen = { version = "4.0.6", optional = true }
 libc = { version = "0.2.184", optional = true }
 unicode-width = { version = "0.2.2", optional = true }
 # flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", package = "flashrom", optional = true }
@@ -28,7 +27,7 @@ tpm2_0 = []
 tpm1_2 = []
 tlcl = []
 example = []
-ui = ["dep:clearscreen", "dep:libc", "dep:unicode-width"]
+ui = ["dep:libc", "dep:unicode-width"]
 # flashrom = ["dep:flashrom"]
 diskutils = ["dep:uuid"]
 

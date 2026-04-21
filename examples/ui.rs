@@ -3,6 +3,8 @@ use libcros::{
   ui::{header::ui_header, menu::selection_menu, *},
 };
 
+use std::io::Write;
+
 const SPLASH: &str = concat!(
   r#"example splash here
 (can be multi-line)"#
@@ -40,7 +42,8 @@ fn main() {
   text.push_str("Example additional text line 2\n");
 
   loop {
-    clearscreen::clear().unwrap();
+    print!("\x1b[H\x1b[2J");
+    std::io::stdout().flush().unwrap();
 
     ui_header(&SPLASH, &text);
 
