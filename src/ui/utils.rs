@@ -2,26 +2,38 @@
 
 use std::{
   io::{self, Write},
-  sync::OnceLock,
 };
 
 use libc::{ECHO, ICANON, STDIN_FILENO, TCSANOW, tcgetattr, tcsetattr, termios};
-use regex::Regex;
 
-pub fn ansi_escape_regex() -> &'static Regex {
-  static ANSI_ESCAPE_REGEX: OnceLock<Regex> = OnceLock::new();
-  ANSI_ESCAPE_REGEX.get_or_init(|| Regex::new(r"\x1b\[[0-9;]*m").unwrap())
+pub fn strip_ansi(s: &str) -> std::borrow::Cow<'_, str> {
+  if !s.contains('\x1b') {
+    return std::borrow::Cow::Borrowed(s);
+  }
+  let mut out = String::with_capacity(s.len());
+  let mut chars = s.chars();
+  while let Some(c) = chars.next() {
+    if c == '\x1b' {
+      if chars.next() == Some('[') {
+        for ch in chars.by_ref() {
+          if ch.is_ascii_alphabetic() { break; }
+        }
+      }
+    } else {
+      out.push(c);
+    }
+  }
+  std::borrow::Cow::Owned(out)
 }
 
 /// Draw centered text in a box.
 pub fn box_draw(text: &str) {
   let margin = 5;
-  let re = ansi_escape_regex();
   let lines: Vec<&str> = text.split('\n').collect();
 
   let mut max_len = 0;
   for line in &lines {
-    let stripped = re.replace_all(line, "");
+    let stripped = strip_ansi(line);
     let visual_width = unicode_width::UnicodeWidthStr::width(stripped.as_ref());
     if visual_width > max_len {
       max_len = visual_width;
@@ -31,7 +43,7 @@ pub fn box_draw(text: &str) {
 
   println!("┌{}┐", "─".repeat(max_len));
   for line in &lines {
-    let stripped = re.replace_all(line, "");
+    let stripped = strip_ansi(line);
     let visual_width = unicode_width::UnicodeWidthStr::width(stripped.as_ref());
     let pad_left = (max_len - visual_width) / 2;
     let pad_right = max_len - visual_width - pad_left;

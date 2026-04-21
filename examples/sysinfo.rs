@@ -128,7 +128,6 @@ fn main() {
   - ram
   - gpu(?)
   - battery (incl charge, estimated time remaining, etc)
-  - gsc info (version, offsets, etc)
   - ec info (version, chip, etc)
   - wp info
   - ap fw info (version, etc)
