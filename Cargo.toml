@@ -18,7 +18,6 @@ all-features = true
 
 [dependencies]
 libc = { version = "0.2.184", optional = true }
-unicode-width = { version = "0.2.2", optional = true }
 # flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", package = "flashrom", optional = true }
 
 [features]
@@ -27,7 +26,7 @@ tpm1_2 = []
 tlcl = []
 example = []
 diskutils = []
-ui = ["dep:libc", "dep:unicode-width"]
+ui = ["dep:libc"]
 # flashrom = ["dep:flashrom"]
 
 # Below here is all of our examples.

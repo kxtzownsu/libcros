@@ -1,12 +1,10 @@
-use unicode_width::UnicodeWidthStr;
-
-use crate::ui::utils::{strip_ansi, box_draw};
+use crate::ui::utils::{strip_ansi, box_draw, str_display_width};
 
 /// Build header text.
 pub fn format_header(splash: &str, additional_text: &str) -> String {
   let max_width = splash
     .split('\n')
-    .map(|line| UnicodeWidthStr::width(strip_ansi(line).as_ref()))
+    .map(|line| str_display_width(strip_ansi(line).as_ref()))
     .max()
     .unwrap_or(0);
 
