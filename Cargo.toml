@@ -20,16 +20,15 @@ all-features = true
 libc = { version = "0.2.184", optional = true }
 unicode-width = { version = "0.2.2", optional = true }
 # flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", package = "flashrom", optional = true }
-uuid = { version = "1.23.0", optional = true}
 
 [features]
 tpm2_0 = []
 tpm1_2 = []
 tlcl = []
 example = []
+diskutils = []
 ui = ["dep:libc", "dep:unicode-width"]
 # flashrom = ["dep:flashrom"]
-diskutils = ["dep:uuid"]
 
 # Below here is all of our examples.
 # There is a lot and it could get messy quick,

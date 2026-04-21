@@ -2,15 +2,28 @@ use crate::structs::{read_struct, write_struct, GPTHeader, GPTPartitionEntry};
 
 const EMPTY_GUID: [u8; 16] = [0u8; 16];
 
-pub fn gpt_guid_to_uuid(raw: &[u8; 16]) -> uuid::Uuid {
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct Uuid([u8; 16]);
+
+impl Uuid {
+  pub fn from_bytes(bytes: [u8; 16]) -> Self {
+    Self(bytes)
+  }
+
+  pub fn as_bytes(&self) -> &[u8; 16] {
+    &self.0
+  }
+}
+
+pub fn gpt_guid_to_uuid(raw: &[u8; 16]) -> Uuid {
   let mut bytes = *raw;
   bytes[0..4].reverse();
   bytes[4..6].reverse();
   bytes[6..8].reverse();
-  uuid::Uuid::from_bytes(bytes)
+  Uuid::from_bytes(bytes)
 }
 
-pub fn uuid_to_gpt_guid(uuid: &uuid::Uuid) -> [u8; 16] {
+pub fn uuid_to_gpt_guid(uuid: &Uuid) -> [u8; 16] {
   let mut bytes = *uuid.as_bytes();
   bytes[0..4].reverse();
   bytes[4..6].reverse();
@@ -56,7 +69,7 @@ impl GptDisk {
     self.entries.get_mut(index)
   }
 
-  pub fn partitions_by_type(&self, type_uuid: &uuid::Uuid) -> Vec<(u32, &GPTPartitionEntry)> {
+  pub fn partitions_by_type(&self, type_uuid: &Uuid) -> Vec<(u32, &GPTPartitionEntry)> {
     let target = uuid_to_gpt_guid(type_uuid);
     self
       .entries
@@ -71,7 +84,7 @@ impl GptDisk {
       .collect()
   }
 
-  pub fn has_partition_type(&self, type_uuid: &uuid::Uuid) -> bool {
+  pub fn has_partition_type(&self, type_uuid: &Uuid) -> bool {
     let target = uuid_to_gpt_guid(type_uuid);
     self
       .entries
@@ -79,7 +92,7 @@ impl GptDisk {
       .any(|entry| Self::entry_type_guid(entry) == target)
   }
 
-  pub fn partition_with_type(&self, id: u32, type_uuid: &uuid::Uuid) -> Option<&GPTPartitionEntry> {
+  pub fn partition_with_type(&self, id: u32, type_uuid: &Uuid) -> Option<&GPTPartitionEntry> {
     let target = uuid_to_gpt_guid(type_uuid);
     let entry = self.partition(id)?;
     if Self::entry_type_guid(entry) != target {
