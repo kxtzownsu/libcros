@@ -1,4 +1,4 @@
-use crate::ui::utils::{strip_ansi, box_draw, str_display_width};
+use crate::ui::utils::{box_draw, str_display_width, strip_ansi};
 
 /// Build header text.
 pub fn format_header(splash: &str, additional_text: &str) -> String {

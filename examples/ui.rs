@@ -1,9 +1,9 @@
+use std::io::Write;
+
 use libcros::{
   LOG,
   ui::{header::ui_header, menu::selection_menu, *},
 };
-
-use std::io::Write;
 
 const SPLASH: &str = concat!(
   r#"example splash here

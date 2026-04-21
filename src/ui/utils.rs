@@ -1,8 +1,6 @@
 #![allow(dead_code)]
 
-use std::{
-  io::{self, Write},
-};
+use std::io::{self, Write};
 
 use libc::{ECHO, ICANON, STDIN_FILENO, TCSANOW, tcgetattr, tcsetattr, termios};
 
@@ -16,7 +14,9 @@ pub fn strip_ansi(s: &str) -> std::borrow::Cow<'_, str> {
     if c == '\x1b' {
       if chars.next() == Some('[') {
         for ch in chars.by_ref() {
-          if ch.is_ascii_alphabetic() { break; }
+          if ch.is_ascii_alphabetic() {
+            break;
+          }
         }
       }
     } else {
