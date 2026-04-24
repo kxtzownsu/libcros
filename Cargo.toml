@@ -25,7 +25,6 @@ tpm2_0 = []
 tpm1_2 = []
 tlcl = []
 example = []
-diskutils = []
 ui = ["dep:libc"]
 # flashrom = ["dep:flashrom"]
 

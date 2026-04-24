@@ -24,7 +24,6 @@ pub struct Tpm2TpmHeader {
   pub tpm_code: u32,
 }
 
-#[cfg(feature = "diskutils")]
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct GPTPartitionEntry {
@@ -36,7 +35,6 @@ pub struct GPTPartitionEntry {
   pub partition_name: [u16; 36],
 }
 
-#[cfg(feature = "diskutils")]
 // lol thanks wikipedia
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
