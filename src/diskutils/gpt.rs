@@ -1,6 +1,10 @@
+use std::io::{self, Read, Seek, SeekFrom};
+
 use crate::structs::{read_struct, write_struct, GPTHeader, GPTPartitionEntry};
 
 const EMPTY_GUID: [u8; 16] = [0u8; 16];
+const GPT_HEADER_LBA: u64 = 1; /* https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_table_header_(LBA_1) */
+const SECTOR_SIZE: u64 = 512; /* This is the default sector size. Maybe we shouldn't be hardcoding it? */
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Uuid([u8; 16]);
@@ -114,4 +118,14 @@ pub fn serialize_entries(disk: &GptDisk) -> Vec<u8> {
   }
 
   raw
+}
+
+pub fn read_header<R: Read + Seek>(disk: &mut R) -> io::Result<GPTHeader> {
+  disk.seek(SeekFrom::Start(GPT_HEADER_LBA * SECTOR_SIZE))?;
+
+  let header_size = core::mem::size_of::<GPTHeader>();
+  let mut header_bytes = vec![0u8; header_size];
+  disk.read_exact(&mut header_bytes)?;
+
+  Ok(read_struct(&header_bytes))
 }

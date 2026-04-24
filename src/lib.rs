@@ -24,6 +24,9 @@ pub mod sysinfo;
 /// Send/receive vendor commands to/from the GSC (Google Security Chip) / TPM.
 pub mod gsc;
 
+/// High-level functions to interact with a GPT-formatted disk. (Including ChromeOS disks)
+pub mod diskutils;
+
 /*
 Anything that requires a dependency should be locked behind a feature flag.
 */
@@ -37,8 +40,5 @@ pub mod ui;
 pub mod tlcl;
 
 /*
-#[cfg(feature = "diskutils")]
-pub mod diskutils;
-
 pub mod vpd;
 */

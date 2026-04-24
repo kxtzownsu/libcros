@@ -1,5 +1,8 @@
+use std::fs::File;
+
 use libcros::{
   LOG, Logger, kv_get, kv_set,
+  diskutils::gpt::read_header,
   libargs::ArgCheck,
   sysinfo::{
     backend::{close_gsc_socket, open_gsc_socket},
@@ -27,7 +30,12 @@ fn main() {
   let flags_tpm_path = args.fequals_str(
     "--tpm-path",
     "-t",
-    "Specify a custom TPM device to use in /dev/tpmX format",
+    "Specify a custom TPM device to use (/dev/tpmX format, e.g: /dev/tpm0",
+  );
+  let flags_disk_path = args.fequals_str(
+    "--disk",
+    "-d",
+    "Specify a disk to read the GPT header from (/dev/[device] format, e.g: /dev/sda)",
   );
   #[cfg(feature = "tpm2_0")]
   let ph_disabled: bool = args.fbool(
@@ -43,6 +51,12 @@ fn main() {
   } else {
     kv_set(libcros::keys::TPM_PATH, &*flags_tpm_path);
   }
+
+  let disk_path = if flags_disk_path.is_empty() {
+    "/dev/sda".to_string()
+  } else {
+    flags_disk_path.clone()
+  };
 
   #[cfg(feature = "tpm2_0")]
   if ph_disabled {
@@ -119,6 +133,49 @@ fn main() {
     type_inv,
     flags
   );
+
+  /* TODO(kxtz): make this easier to do with a sysinfo function */
+  match File::open(&disk_path) {
+    Ok(mut f) => match read_header(&mut f) {
+      Ok(header) => {
+        let sig = std::str::from_utf8(&header.magic).unwrap_or("???");
+        let revision = header.revision;
+        let header_size = header.header_size;
+        let current_lba = header.current_lba;
+        let backup_lba = header.backup_lba;
+        let first_usable_lba = header.first_usable_lba;
+        let last_usable_lba = header.last_usable_lba;
+        let partition_entry_lba = header.partition_entry_lba;
+        let num_entries = header.num_partition_entries;
+        let entry_size = header.size_partition_entry;
+        let header_crc32 = header.header_crc32;
+        let part_crc32 = header.partition_entry_array_crc32;
+
+        LOG!("GPT Header ({}):", disk_path);
+        LOG!("  signature: {}", sig);
+        LOG!("  revision: {}.{}", revision >> 16, revision & 0xffff);
+        LOG!("  header size: {} bytes", header_size);
+        LOG!("  current lba: {}", current_lba);
+        LOG!("  backup lba: {}", backup_lba);
+        LOG!(
+          "  usable lba range: {} - {}",
+          first_usable_lba,
+          last_usable_lba
+        );
+        LOG!("  partition table @ lba: {}", partition_entry_lba);
+        LOG!("  entries: {}", num_entries);
+        LOG!("  entry size: {}", entry_size);
+        LOG!("  header crc32: 0x{:08x}", header_crc32);
+        LOG!("  partition array crc32: 0x{:08x}", part_crc32);
+      }
+      Err(e) => {
+        LOG!("failed to read GPT header from {}: {}", disk_path, e);
+      }
+    },
+    Err(e) => {
+      LOG!("failed to open {}: {}", disk_path, e);
+    }
+  }
 
   /*
   TODO: we need the following:
