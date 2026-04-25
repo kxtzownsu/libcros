@@ -17,7 +17,6 @@ exclude = [
 all-features = true
 
 [dependencies]
-libc = { version = "0.2.184", optional = true }
 # flashrom = { git = "https://github.com/flashrom/flashrom", branch = "main", package = "flashrom", optional = true }
 
 [features]
@@ -25,7 +24,6 @@ tpm2_0 = []
 tpm1_2 = []
 tlcl = []
 example = []
-ui = ["dep:libc"]
 # flashrom = ["dep:flashrom"]
 
 # Below here is all of our examples.
@@ -50,7 +48,7 @@ required-features = ["example"]
 
 [[example]]
 name = "ui"
-required-features = ["example", "ui"]
+required-features = ["example"]
 
 [[example]]
 name = "sysinfo"

@@ -27,13 +27,15 @@ pub mod gsc;
 /// High-level functions to interact with a GPT-formatted disk. (Including ChromeOS disks)
 pub mod diskutils;
 
+/// Basic drawing functions for TUIs
+pub mod ui;
+
 /*
 Anything that requires a dependency should be locked behind a feature flag.
-*/
 
-/// Basic drawing functions for TUIs
-#[cfg(feature = "ui")]
-pub mod ui;
+Or, if the feature itself takes up a lot of space, we should also lock it
+behind a feature flag.
+*/
 
 /// A lightweight TPM2 library. Based on vboot's Tlcl library.
 #[cfg(feature = "tlcl")]

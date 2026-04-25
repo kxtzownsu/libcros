@@ -2,7 +2,28 @@
 
 use std::io::{self, Write};
 
-use libc::{ECHO, ICANON, STDIN_FILENO, TCSANOW, tcgetattr, tcsetattr, termios};
+const STDIN_FILENO: i32 = 0;
+const TCSANOW: i32 = 0;
+const ICANON: u32 = 0x00000002;
+const ECHO: u32 = 0x00000008;
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct termios {
+  pub c_iflag: u32,
+  pub c_oflag: u32,
+  pub c_cflag: u32,
+  pub c_lflag: u32,
+  pub c_line: u8,
+  pub c_cc: [u8; 32],
+  pub c_ispeed: u32,
+  pub c_ospeed: u32,
+}
+
+unsafe extern "C" {
+  fn tcgetattr(fd: i32, termios: *mut termios) -> i32;
+  fn tcsetattr(fd: i32, optional_actions: i32, termios: *const termios) -> i32;
+}
 
 pub fn strip_ansi(s: &str) -> std::borrow::Cow<'_, str> {
   if !s.contains('\x1b') {
@@ -105,7 +126,7 @@ pub fn enter_to_continue() {
 }
 
 /// Enable terminal raw mode.
-pub fn enable_raw_mode() -> libc::termios {
+pub fn enable_raw_mode() -> termios {
   unsafe {
     let mut termios: termios = std::mem::zeroed();
     tcgetattr(STDIN_FILENO, &mut termios);
@@ -119,7 +140,7 @@ pub fn enable_raw_mode() -> libc::termios {
 }
 
 /// Restore terminal settings.
-pub fn disable_raw_mode(original: libc::termios) {
+pub fn disable_raw_mode(original: termios) {
   unsafe {
     tcsetattr(STDIN_FILENO, TCSANOW, &original);
   }
