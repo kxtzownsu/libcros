@@ -30,6 +30,10 @@ pub mod diskutils;
 /// Basic drawing functions for TUIs
 pub mod ui;
 
+/// Various high-level functions to read the cmdline of the currently-running Linux kernel.
+/// (assuming you have read permissions to `/proc/cmdline`)
+pub mod cmdline;
+
 /*
 Anything that requires a dependency should be locked behind a feature flag.
 

@@ -51,6 +51,10 @@ name = "ui"
 required-features = ["example"]
 
 [[example]]
+name = "cmdline"
+required-features = ["example"]
+
+[[example]]
 name = "sysinfo"
 required-features = ["example", "tlcl"]
 
