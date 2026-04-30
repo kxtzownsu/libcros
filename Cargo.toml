@@ -9,8 +9,21 @@ repository = "https://github.com/kxtzownsu/libcros"
 keywords = ["chrome", "chromeos", "google", "chromium", "chromiumos"]
 categories = ["hardware-support", "embedded"]
 authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
+include = [
+  "src/**/*",
+  "Scripts/**/*",
+  "examples/**/*",
+  ".cargo/**/*",
+  "Cargo.toml",
+  "Cargo.lock",
+  "LICENSE",
+  "README.md",
+  ".gitignore",
+  ".gitattributes",
+  "rustfmt.toml"
+]
 exclude = [
-  "reference/**"
+  "reference/**/*"
 ]
 
 [package.metadata.docs.rs]
