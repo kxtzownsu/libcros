@@ -11,7 +11,7 @@ fn main() -> std::io::Result<()> {
   args.check_help();
 
   let mut disk_path = flags_disk.clone();
-  let mut partition_id: u32 = flags_partition_id.parse().unwrap_or(12);
+  let partition_id: u32 = flags_partition_id.parse().unwrap_or(12);
 
   if flags_disk.is_empty() {
     disk_path = "/dev/sda".to_string();
