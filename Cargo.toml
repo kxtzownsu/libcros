@@ -35,6 +35,10 @@ name = "logger"
 required-features = ["example"]
 
 [[example]]
+name = "gpt"
+required-features = ["example"]
+
+[[example]]
 name = "libargs"
 required-features = ["example"]
 
