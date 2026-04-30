@@ -1,8 +1,5 @@
 /// Common keys for the global key/value store.
 pub mod keys {
-  /// Internal disk path.
-  pub const INTERNAL_DISK: &str = "internal_disk";
-
   /// Global file handle for the GSC device.
   pub const GSC_SOCKET: &str = "gsc_socket";
 
