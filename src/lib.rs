@@ -34,6 +34,9 @@ pub mod ui;
 /// (assuming you have read permissions to `/proc/cmdline`)
 pub mod cmdline;
 
+/// Various system calls.
+pub mod libc;
+
 /*
 Anything that requires a dependency should be locked behind a feature flag.
 

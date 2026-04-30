@@ -72,6 +72,10 @@ name = "cmdline"
 required-features = ["example"]
 
 [[example]]
+name = "mkdir"
+required-features = ["example"]
+
+[[example]]
 name = "sysinfo"
 required-features = ["example", "tlcl"]
 
