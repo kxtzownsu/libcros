@@ -9,26 +9,30 @@ pub const SYSCALL_MKDIRAT: usize = 323;
 
 pub unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> isize {
   let ret: isize;
-  core::arch::asm!(
-    "svc 0",
-    in("r7") n,
-    inlateout("r0") a1 => ret,
-    in("r1") a2,
-    options(nostack),
-  );
+  unsafe {
+    core::arch::asm!(
+      "svc 0",
+      in("r7") n,
+      inlateout("r0") a1 => ret,
+      in("r1") a2,
+      options(nostack),
+    );
+  }
   ret
 }
 
 pub unsafe fn syscall3(n: usize, a1: usize, a2: usize, a3: usize) -> isize {
   let ret: isize;
-  core::arch::asm!(
-    "svc 0",
-    in("r7") n,
-    inlateout("r0") a1 => ret,
-    in("r1") a2,
-    in("r2") a3,
-    options(nostack),
-  );
+  unsafe {
+    core::arch::asm!(
+      "svc 0",
+      in("r7") n,
+      inlateout("r0") a1 => ret,
+      in("r1") a2,
+      in("r2") a3,
+      options(nostack),
+    );
+  }
   ret
 }
 
@@ -41,15 +45,17 @@ pub unsafe fn syscall5(
   a5: usize,
 ) -> isize {
   let ret: isize;
-  core::arch::asm!(
-    "svc 0",
-    in("r7") n,
-    inlateout("r0") a1 => ret,
-    in("r1") a2,
-    in("r2") a3,
-    in("r3") a4,
-    in("r4") a5,
-    options(nostack),
-  );
+  unsafe {
+    core::arch::asm!(
+      "svc 0",
+      in("r7") n,
+      inlateout("r0") a1 => ret,
+      in("r1") a2,
+      in("r2") a3,
+      in("r3") a4,
+      in("r4") a5,
+      options(nostack),
+    );
+  }
   ret
 }

@@ -21,7 +21,7 @@ pub unsafe fn mkdir(path: *const u8, mode: usize) -> isize {
   unsafe {
     syscall3(
       SYSCALL_MKDIRAT,
-      AT_FDCWD,
+      AT_FDCWD.try_into().unwrap(),
       path as usize,
       mode,
     )
