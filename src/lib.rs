@@ -37,6 +37,9 @@ pub mod cmdline;
 /// Various system calls.
 pub mod libc;
 
+/// Filesystem-related APIs\
+pub mod fs;
+
 /*
 Anything that requires a dependency should be locked behind a feature flag.
 

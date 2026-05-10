@@ -81,6 +81,10 @@ name = "mkdir"
 required-features = ["example"]
 
 [[example]]
+name = "filesystem"
+required-features = ["example"]
+
+[[example]]
 name = "sysinfo"
 required-features = ["example", "tlcl"]
 

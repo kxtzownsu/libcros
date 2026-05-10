@@ -31,3 +31,6 @@ target/
 
 # This is where most of the code originates from. This is an old project of mine that doesn't have a high chance of releasing anymore.
 /reference/kaub
+
+# We use this for testing the disk-related libraries (e.g: diskutils, fs)
+test_disk.bin
