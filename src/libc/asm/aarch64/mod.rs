@@ -1,6 +1,8 @@
+pub const SYSCALL_IOCTL: usize = 29;
 pub const SYSCALL_MKDIRAT: usize = 34;
 pub const SYSCALL_UMOUNT2: usize = 39;
 pub const SYSCALL_MOUNT: usize = 40;
+pub const SYSCALL_FTRUNCATE: usize = 46;
 pub const SYSCALL_OPENAT: usize = 56;
 pub const SYSCALL_CLOSE: usize = 57;
 pub const SYSCALL_READ: usize = 63;

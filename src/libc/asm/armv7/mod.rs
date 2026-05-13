@@ -5,6 +5,8 @@ pub const SYSCALL_CLOSE: usize = 6;
 pub const SYSCALL_MOUNT: usize = 21;
 pub const SYSCALL_MKDIR: usize = 39;
 pub const SYSCALL_UMOUNT2: usize = 52;
+pub const SYSCALL_IOCTL: usize = 54;
+pub const SYSCALL_FTRUNCATE: usize = 93;
 pub const SYSCALL_MKDIRAT: usize = 323;
 
 pub unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> isize {
