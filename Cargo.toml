@@ -1,6 +1,6 @@
 [package]
 name = "libcros"
-version = "0.6.4"
+version = "0.6.5"
 edition = "2024"
 autoexamples = false
 description = "A Rust library that provides easy-to-use functions for interacting with a Chrome device"
@@ -11,7 +11,7 @@ categories = ["hardware-support", "embedded"]
 authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
 include = [
   "src/**/*",
-  "Scripts/**/*",
+  "scripts/**/*",
   ".cargo/**/*",
   "Cargo.toml",
   "Cargo.lock",
