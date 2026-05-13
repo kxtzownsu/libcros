@@ -12,7 +12,6 @@ authors = ["kxtzownsu <kxtzownsu@gmail.com>"]
 include = [
   "src/**/*",
   "Scripts/**/*",
-  "examples/**/*",
   ".cargo/**/*",
   "Cargo.toml",
   "Cargo.lock",
@@ -87,7 +86,6 @@ required-features = ["example"]
 [[example]]
 name = "sysinfo"
 required-features = ["example", "tlcl"]
-
 
 [[example]]
 name = "tlcl_clear"
