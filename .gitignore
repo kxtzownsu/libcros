@@ -34,6 +34,3 @@ target/
 
 # We use this for testing the disk-related libraries (e.g: diskutils, fs)
 test_disk.bin
-
-# This file is under NDA. It will be added at a later date.
-examples/tmpfs.rs

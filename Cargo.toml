@@ -13,6 +13,7 @@ include = [
   "src/**/*",
   "scripts/**/*",
   ".cargo/**/*",
+  "examples/**/*",
   "Cargo.toml",
   "Cargo.lock",
   "LICENSE",
@@ -84,12 +85,16 @@ name = "filesystem"
 required-features = ["example"]
 
 [[example]]
-name = "sysinfo"
-required-features = ["example", "tlcl"]
+name = "tmpfs"
+required-features = ["example"]
 
 [[example]]
 name = "is_ti50"
 required-features = ["example"]
+
+[[example]]
+name = "sysinfo"
+required-features = ["example", "tlcl"]
 
 [[example]]
 name = "tlcl_clear"
