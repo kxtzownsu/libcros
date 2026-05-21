@@ -3,10 +3,13 @@ pub const SYSCALL_MKDIRAT: usize = 34;
 pub const SYSCALL_UMOUNT2: usize = 39;
 pub const SYSCALL_MOUNT: usize = 40;
 pub const SYSCALL_FTRUNCATE: usize = 46;
+pub const SYSCALL_CHDIR: usize = 49;
+pub const SYSCALL_CHROOT: usize = 51;
 pub const SYSCALL_OPENAT: usize = 56;
 pub const SYSCALL_CLOSE: usize = 57;
 pub const SYSCALL_READ: usize = 63;
 pub const SYSCALL_WRITE: usize = 64;
+pub const SYSCALL_EXECVE: usize = 221;
 
 pub unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> isize {
   let ret: isize;

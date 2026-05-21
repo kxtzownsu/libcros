@@ -2,10 +2,13 @@ pub const SYSCALL_READ: usize = 3;
 pub const SYSCALL_WRITE: usize = 4;
 pub const SYSCALL_OPEN: usize = 5;
 pub const SYSCALL_CLOSE: usize = 6;
+pub const SYSCALL_EXECVE: usize = 11;
+pub const SYSCALL_CHDIR: usize = 12;
 pub const SYSCALL_MOUNT: usize = 21;
 pub const SYSCALL_MKDIR: usize = 39;
 pub const SYSCALL_UMOUNT2: usize = 52;
 pub const SYSCALL_IOCTL: usize = 54;
+pub const SYSCALL_CHROOT: usize = 61;
 pub const SYSCALL_FTRUNCATE: usize = 93;
 pub const SYSCALL_MKDIRAT: usize = 323;
 
