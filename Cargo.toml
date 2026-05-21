@@ -88,6 +88,10 @@ name = "sysinfo"
 required-features = ["example", "tlcl"]
 
 [[example]]
+name = "is_ti50"
+required-features = ["example"]
+
+[[example]]
 name = "tlcl_clear"
 required-features = ["example", "tlcl"]
 
