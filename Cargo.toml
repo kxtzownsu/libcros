@@ -81,6 +81,10 @@ name = "mkdir"
 required-features = ["example"]
 
 [[example]]
+name = "libc"
+required-features = ["example"]
+
+[[example]]
 name = "filesystem"
 required-features = ["example"]
 
