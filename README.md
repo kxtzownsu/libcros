@@ -26,3 +26,12 @@ Then, look at some examples in [examples/](examples/). There are examples on how
 - [appleflyer](https://github.com/appleflyerv3) - intial Tlcl rust port. wouldn't have been able to start w/out them
 - [Google](https://chromium.googlesource.com/chromiumos/platform/vboot_reference/+/e388d1f93c9573a79a04b633c3a0569ddbce6c94/firmware/lib/) - writing Tlcl.
 - [zeglol](https://github.com/ZegLolTheThirtySixth) - writing the initial version of libargs in C. writing [AGENTS.md](/AGENTS.md)
+
+## License
+
+`libcros` is dual-licensed under the following terms:
+
+* **GNU General Public License v3.0 (GPLv3)**: Use this license when incorporating `libcros` into projects that require GPLv3 compatibility. (See [LICENSE-GPL](/LICENSE-GPL))
+* **Apache License 2.0**: Use this license when incorporating `libcros` into proprietary or closed-source projects. (See [LICENSE-APACHE](/LICENSE-APACHE) and [NOTICE](/NOTICE))
+
+You may choose either license when using `libcros`, provided that you comply with the terms of the selected license.
