@@ -17,11 +17,54 @@ use crate::{LOG_FATAL, keys, keyval::KvValue, kv_get};
 pub const TPM_MAX_RETRIES: u32 = 5;
 pub const TPM_RETRY_DELAY_MS: u64 = 100;
 
+const TPM_HEADER_SIZE: usize = 10;
+
+enum Response {
+  Complete(usize),
+  TooLarge(usize),
+}
+
 fn should_retry_io(err: &Error) -> bool {
   matches!(
     err.kind(),
     ErrorKind::PermissionDenied | ErrorKind::WouldBlock | ErrorKind::Interrupted
   ) || err.raw_os_error() == Some(16)
+}
+
+fn read_response<R: Read>(reader: &mut R, buf: &mut [u8]) -> Result<Response, Error> {
+  let mut received = 0usize;
+
+  while received < buf.len() {
+    match reader.read(&mut buf[received..]) {
+      Ok(0) => break,
+      Ok(read) => {
+        received += read;
+
+        if received < TPM_HEADER_SIZE {
+          continue;
+        }
+
+        let total_size = u32::from_be_bytes([buf[2], buf[3], buf[4], buf[5]]) as usize;
+
+        if total_size < TPM_HEADER_SIZE {
+          return Err(Error::new(ErrorKind::InvalidData, "short TPM response"));
+        }
+        if total_size > buf.len() {
+          return Ok(Response::TooLarge(total_size));
+        }
+        if received >= total_size {
+          return Ok(Response::Complete(total_size));
+        }
+      }
+      Err(err) if err.kind() == ErrorKind::Interrupted => continue,
+      Err(err) => return Err(err),
+    }
+  }
+
+  Err(Error::new(
+    ErrorKind::UnexpectedEof,
+    "truncated TPM response",
+  ))
 }
 
 pub fn tpm_xmit(
@@ -71,38 +114,30 @@ pub fn tpm_xmit(
     }
 
     let recv_data = unsafe { core::slice::from_raw_parts_mut(recvbuf, recv_cap) };
-    if let Err(err) = tpm_file.read_exact(&mut recv_data[..TPM_HEADER_SIZE]) {
-      if should_retry_io(&err) && attempt + 1 < TPM_MAX_RETRIES {
+
+    let response = match read_response(&mut tpm_file, recv_data) {
+      Ok(response) => response,
+      Err(err) if should_retry_io(&err) && attempt + 1 < TPM_MAX_RETRIES => {
         thread::sleep(Duration::from_millis(TPM_RETRY_DELAY_MS));
         continue;
       }
-      return constants::TPM_E_COMMUNICATION_ERROR;
-    }
+      Err(_) => return constants::TPM_E_COMMUNICATION_ERROR,
+    };
 
-    let total_size =
-      u32::from_be_bytes([recv_data[2], recv_data[3], recv_data[4], recv_data[5]]) as usize;
-    if total_size < TPM_HEADER_SIZE {
-      return constants::TPM_E_COMMUNICATION_ERROR;
-    }
-    if total_size > recv_cap {
-      unsafe {
-        *recv_len = total_size;
+    match response {
+      Response::TooLarge(total_size) => {
+        unsafe {
+          *recv_len = total_size;
+        }
+        return constants::TPM_E_RESPONSE_TOO_LARGE;
       }
-      return constants::TPM_E_RESPONSE_TOO_LARGE;
-    }
-
-    if let Err(err) = tpm_file.read_exact(&mut recv_data[TPM_HEADER_SIZE..total_size]) {
-      if should_retry_io(&err) && attempt + 1 < TPM_MAX_RETRIES {
-        thread::sleep(Duration::from_millis(TPM_RETRY_DELAY_MS));
-        continue;
+      Response::Complete(total_size) => {
+        unsafe {
+          *recv_len = total_size;
+        }
+        return constants::TPM_SUCCESS;
       }
-      return constants::TPM_E_COMMUNICATION_ERROR;
     }
-
-    unsafe {
-      *recv_len = total_size;
-    }
-    return constants::TPM_SUCCESS;
   }
 
   constants::TPM_E_COMMUNICATION_ERROR
