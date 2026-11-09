@@ -3,7 +3,7 @@
 set -euo pipefail
 
 KERNEL_TAG=$(uname -r | sed 's/\([0-9]*\.[0-9]*\).*/v\1/')
-BASE_URL="https://raw.githubusercontent.com/torvalds/linux/${KERNEL_TAG}/drivers/char/tpm"
+BASE_URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/drivers/char/tpm/"
 BUILD_DIR=$(mktemp -d)
 
 file_list=(
@@ -12,7 +12,7 @@ file_list=(
 )
 
 for file in "${file_list[@]}"; do
-  wget "${BASE_URL}/${file}" -O "${BUILD_DIR}/${file}"
+  wget "${BASE_URL}/${file}?h=${KERNEL_TAG}" -O "${BUILD_DIR}/${file}"
 done
 
 cat <<EOF > "${BUILD_DIR}/Makefile"
